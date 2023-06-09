@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "608177198746",
+    "project_id": "todolist-ded49",
+    "storage_bucket": "todolist-ded49.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608177198746:android:a335daf68d73d3cc3eb123",
+        "android_client_info": {
+          "package_name": "com.kelter.todolist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "608177198746-ltl1qs1f8gder8viietddkr8q1ngqo4u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRfwcpFaOCIePTaFTQoC0T2GxW42lN2Rs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "608177198746-ltl1qs1f8gder8viietddkr8q1ngqo4u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
