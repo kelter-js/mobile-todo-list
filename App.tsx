@@ -16,6 +16,7 @@ import { storeData } from "./utils/storage";
 import { ITask } from "./components/Task";
 import TaskList from "./components/TaskList";
 import NewTaskForm from "./components/NewTaskForm";
+import ModalWindow from "./components/Modal";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -77,6 +78,7 @@ const registerForPushNotificationsAsync = async () => {
 const App = () => {
   const [expoPushToken, setExpoPushToken] = useState<any>("");
   const [notification, setNotification] = useState<any>(false);
+  const [openedTask, setOpenedTask] = useState<string | null>(null);
 
   const [tasks, setTasks] = useState<ITask[]>([
     { text: "first task" },
@@ -163,6 +165,7 @@ const App = () => {
           <Text style={styles.sectionTitle}>Today`s tasks</Text>
 
           <TaskList tasks={tasks} onRemove={handleRemoveTask} />
+          <ModalWindow />
 
           <NewTaskForm addNewTask={handleCreateNewTask} />
         </View>
