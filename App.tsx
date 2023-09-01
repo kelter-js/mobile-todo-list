@@ -2,104 +2,94 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Text,
   View,
-  Platform,
   StyleSheet,
   ScrollView,
   AppState,
   Keyboard,
+  ImageBackground,
+  Dimensions,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
+import uuid from "react-native-uuid";
 
 import { storeData } from "./utils/storage";
 import { ITask } from "./components/Task";
 import TaskList from "./components/TaskList";
 import NewTaskForm from "./components/NewTaskForm";
+import getRandom from "./utils/getRandom";
 import ModalWindow from "./components/Modal";
+import {
+  schedulePushNotification,
+  registerForPushNotificationsAsync,
+} from "./utils/notifications";
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
+const screenWidth = Dimensions.get("window").width;
+const backgroundPaths = [
+  require("./assets/background/nature-1.jpg"),
+  require("./assets/background/nature-2.jpg"),
+  require("./assets/background/nature-3.jpg"),
+  require("./assets/background/nature-4.jpg"),
+  require("./assets/background/nature-5.jpg"),
+  require("./assets/background/nature-6.jpg"),
+  require("./assets/background/nature-7.jpg"),
+  require("./assets/background/nature-8.jpg"),
+  require("./assets/background/nature-9.jpg"),
+  require("./assets/background/nature-10.jpg"),
+];
 
-async function schedulePushNotification(text: string) {
-  const currentTime = new Date();
-  currentTime.setMinutes(currentTime.getMinutes() + 1);
-
-  const notificationId = await Notifications.scheduleNotificationAsync({
-    content: {
-      title: `${text}`,
-      body: `${text}`,
-      data: { data: "goes here" },
-    },
-    trigger: currentTime,
-    identifier: "testIdentifier",
-  });
-
-  return { notificationId, currentTime };
-}
-
-const registerForPushNotificationsAsync = async () => {
-  let token;
-
-  if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
-    });
-  }
-
-  if (Device.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== "granted") {
-      //alert('Failed to get push token for push notification!');
-      return;
-    }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-  } else {
-    //alert('Must use physical device for Push Notifications');
-  }
-
-  return token;
-};
+const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
 
 const App = () => {
-  const [expoPushToken, setExpoPushToken] = useState<any>("");
+  const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState<any>(false);
-  const [openedTask, setOpenedTask] = useState<string | null>(null);
+  const [openedTask, setOpenedTask] = useState("");
+  const [isModalWindowOpened, setModalOpened] = useState(false);
+  const [currentImagePath, setCurrentImagePath] = useState();
+
+  const handleResetOpenedTask = useCallback(() => {
+    setModalOpened(false);
+    setOpenedTask("");
+  }, []);
+
+  const handleTaskOpen = useCallback((id: string) => {
+    setOpenedTask(id);
+  }, []);
 
   const [tasks, setTasks] = useState<ITask[]>([
-    { text: "first task" },
-    { text: "second task" },
-    { text: "test task" },
+    { id: uuid.v1(), text: "first task" },
+    { id: uuid.v1(), text: "second task" },
+    { id: uuid.v1(), text: "test task" },
   ] as ITask[]);
 
   const handleCreateNewTask = (taskText: string) => {
     Keyboard.dismiss();
-    setTasks((state) => [...state, { text: taskText }]);
-    createNewNotification(taskText);
+    setTasks((state) => [...state, { id: uuid.v1(), text: taskText }]);
   };
 
   const notificationListener = useRef<any>();
   const responseListener = useRef<any>();
 
-  const createNewNotification = async (text: string) => {
-    const { currentTime, notificationId } = await schedulePushNotification(
-      text
+  console.log("opened task:", openedTask);
+  console.log("isModalWindowOpened in app:", isModalWindowOpened);
+
+  useEffect(() => {
+    if (Boolean(openedTask.trim())) {
+      setModalOpened(true);
+    }
+  }, [openedTask]);
+
+  const createNewNotification = async (remindDate: Date) => {
+    setModalOpened(false);
+
+    const { date, notificationId } = await schedulePushNotification(
+      openedTask,
+      remindDate
     );
-    await storeData("taskTime", currentTime.toString());
+
+    setOpenedTask("");
+
+    await storeData("taskTime", date.toString());
     await storeData("taskId", notificationId);
   };
 
@@ -131,20 +121,18 @@ const App = () => {
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
+      setExpoPushToken(token ?? "")
     );
 
     notificationListener.current =
-      Notifications.addNotificationReceivedListener(async (ontification) => {
+      Notifications.addNotificationReceivedListener(async (notification) => {
         setNotification(notification);
       });
 
     responseListener.current =
-      Notifications.addNotificationResponseReceivedListener(
-        async (response) => {
-          console.log(response);
-        }
-      );
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
 
     return () => {
       Notifications.removeNotificationSubscription(
@@ -154,18 +142,51 @@ const App = () => {
     };
   }, []);
 
-  const handleRemoveTask = (index: number) => {
-    setTasks([...tasks.slice(0, index), ...tasks.slice(index + 1)]);
-  };
+  const handleRemoveTask = useCallback(() => {
+    const taskToRemove = tasks.find((item) => item.id === openedTask);
+
+    if (taskToRemove) {
+      const taskIndex = tasks.indexOf(taskToRemove);
+      setTasks([...tasks.slice(0, taskIndex), ...tasks.slice(taskIndex + 1)]);
+    }
+
+    setOpenedTask("");
+    setModalOpened(false);
+  }, [tasks, openedTask]);
+
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      const newImageSrc =
+        backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
+      setCurrentImagePath(newImageSrc);
+    }, 6500);
+
+    return () => clearInterval(timerId);
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.container}>
+      <ImageBackground
+        resizeMode="cover"
+        style={styles.backgroundImage}
+        source={currentImagePath || prefabImage}
+      />
+      <View style={styles.blurred} />
+
+      <View style={styles.contentContainer}>
         <View style={styles.tasksContainer}>
           <Text style={styles.sectionTitle}>Today`s tasks</Text>
 
-          <TaskList tasks={tasks} onRemove={handleRemoveTask} />
-          <ModalWindow />
+          <TaskList tasks={tasks} onTaskOpen={handleTaskOpen} />
+
+          {isModalWindowOpened && (
+            <ModalWindow
+              taskId={String(openedTask)}
+              onCloseModal={handleResetOpenedTask}
+              onRemoveTask={handleRemoveTask}
+              onCreateReminder={createNewNotification}
+            />
+          )}
 
           <NewTaskForm addNewTask={handleCreateNewTask} />
         </View>
@@ -178,16 +199,34 @@ const styles = StyleSheet.create({
   container: {
     position: "relative",
     flex: 1,
-    backgroundColor: "#E8EAED",
+  },
+  contentContainer: {
+    position: "relative",
+    flex: 1,
   },
   tasksContainer: {
     flex: 1,
-    paddingTop: 80,
-    paddingHorizontal: 20,
+    marginTop: 80,
+    marginHorizontal: 10,
+    paddingHorizontal: 10,
   },
   sectionTitle: {
     fontSize: 24,
     fontWeight: "bold",
+  },
+  backgroundImage: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+  },
+  blurred: {
+    position: "absolute",
+    top: 70,
+    left: 10,
+    width: screenWidth - 20,
+    height: "50%",
+    background: "rgba(0,0,0,0.8)",
+    backdropFilter: "saturate(180%) blur(10px)",
   },
 });
 

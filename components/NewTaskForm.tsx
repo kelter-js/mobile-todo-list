@@ -8,6 +8,7 @@ import {
   TextInput,
   StyleSheet,
   Keyboard,
+  Dimensions,
 } from "react-native";
 
 interface INewTaskFormProps {
@@ -15,6 +16,7 @@ interface INewTaskFormProps {
 }
 
 const IOS_TYPE = "ios";
+const screenWidth = Dimensions.get("window").width;
 
 const NewTaskForm = ({ addNewTask }: INewTaskFormProps): JSX.Element => {
   const [newTaskText, setNewTaskText] = useState("");
@@ -54,27 +56,36 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     borderColor: "#c0c0c0",
     borderWidth: 1,
-    width: 250,
+    flexGrow: 1,
   },
   writeTaskWrapper: {
+    flex: 1,
     position: "absolute",
     bottom: 60,
-    width: "100%",
+    left: 10,
+    width: '100%',
     flexDirection: "row",
-    justifyContent: "space-around",
     alignItems: "center",
+    borderRadius: 60,
   },
   addWrapper: {
+    position: 'relative',
     height: 60,
     width: 60,
     backgroundColor: "#fff",
     borderRadius: 60,
+    marginLeft: 10,
     justifyContent: "center",
     alignItems: "center",
     borderColor: "#c0c0c0",
     borderWidth: 1,
   },
-  addText: {},
+  addText: {
+    position: 'absolute',
+    top: "-15%",
+    left: "25%",
+    fontSize: 50,
+  },
 });
 
 export default NewTaskForm;

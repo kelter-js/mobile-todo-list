@@ -1,55 +1,121 @@
-import { useState } from "react";
-import { Alert, Modal, StyleSheet, Text, Pressable, View } from "react-native";
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  Pressable,
+  View,
+  TouchableOpacity,
+} from "react-native";
+import { useState, useCallback } from "react";
+import { Ionicons } from '@expo/vector-icons';
+
+import { DatePicker } from "./DatePicker";
 
 interface IModalWindowProps {
   taskId?: string;
   taskText?: string;
-  onCreateReminer?: VoidFunction;
-  onDeleteTask?: (id: string) => void;
+  onCreateReminder: (date: Date) => void;
+  onRemoveTask: VoidFunction;
+  onCloseModal: VoidFunction;
 }
 
-const ModalWindow = ({}: IModalWindowProps): JSX.Element => {
-  const [modalVisible, setModalVisible] = useState(false);
+const ModalWindow = ({
+  onCloseModal,
+  onRemoveTask,
+  onCreateReminder,
+  taskId,
+}: IModalWindowProps): JSX.Element => {
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isDateSelected, setDateSelected] = useState(false);
+
+  const handleDateSelection = useCallback((date: Date) => {
+    setDateSelected(true);
+    setSelectedDate(date);
+  }, []);
 
   return (
-    <View style={styles.centeredView}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Hello World!</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.textStyle}>Close</Text>
-            </Pressable>
-          </View>
-        </View>
+    <View style={styles.centeredViewContainer}>
+      <Modal animationType="fade" transparent={true} visible={true}>
+        <TouchableOpacity onPress={onCloseModal} style={styles.modalOverlay}>
+          <TouchableOpacity activeOpacity={1}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <TouchableOpacity
+                  style={styles.closeModalButton}
+                  onPress={onCloseModal}
+                >
+                  <Ionicons name="ios-close-circle-outline" size={28} color="#333" />
+                </TouchableOpacity>
+
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={onRemoveTask}
+                >
+                  <Text style={styles.textStyle}>Remove</Text>
+                </Pressable>
+
+                <TouchableOpacity disabled={!isDateSelected}>
+                  <Pressable
+                    style={[
+                      styles.button,
+                      styles.buttonClose,
+                      !isDateSelected && styles.buttonDisabled,
+                    ]}
+                    onPress={() => onCreateReminder(selectedDate)}
+                  >
+                    <Text style={styles.textStyle}>
+                      Remind me about this task later
+                    </Text>
+                  </Pressable>
+                </TouchableOpacity>
+
+                <DatePicker
+                  setSelectedDate={handleDateSelection}
+                  date={selectedDate}
+                />
+              </View>
+            </View>
+          </TouchableOpacity>
+        </TouchableOpacity>
       </Modal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  modalOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  buttonDisabled: {
+    opacity: 0.3,
+  },
   centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22,
+  },
+  centeredViewContainer: {
+    position: 'relative',
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalView: {
+    flexDirection: "column",
+    justifyContent: "space-between",
     margin: 20,
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 35,
+    padding: 15,
+    paddingTop: 25,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -59,11 +125,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    width: "75%",
+    height: 290,
+    width: "90%",
   },
   button: {
     borderRadius: 20,
     padding: 10,
+    marginBottom: 22,
     elevation: 2,
   },
   buttonClose: {
@@ -78,6 +146,11 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: "center",
   },
+  closeModalButton: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+  }
 });
 
 export default ModalWindow;

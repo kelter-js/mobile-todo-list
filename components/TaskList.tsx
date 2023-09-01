@@ -1,16 +1,21 @@
-import Task from "./Task";
+import Task, { ITask } from "./Task";
 import { View, StyleSheet } from "react-native";
 
 interface ITaskListProps {
-  tasks: Array<{ text: string }>;
-  onRemove: (id: number) => void;
+  tasks: Array<ITask>;
+  onTaskOpen: (id: string) => void;
 }
 
-const TaskList = ({ tasks, onRemove }: ITaskListProps): JSX.Element => {
+const TaskList = ({ tasks, onTaskOpen }: ITaskListProps): JSX.Element => {
   return (
     <View style={styles.items}>
       {tasks.map((item, index) => (
-        <Task index={index} text={item.text} key={index} onRemove={onRemove} />
+        <Task
+          id={String(item.id)}
+          text={item.text}
+          key={index}
+          onOpen={onTaskOpen}
+        />
       ))}
     </View>
   );

@@ -9,26 +9,28 @@ import {
 
 export interface ITask {
   text: string;
+  id: string | Uint8Array;
 }
 
 interface ITaskProps extends ITask {
-  onRemove: (index: number) => void;
-  index: number;
+  onOpen: (id: string) => void;
+  id: string | Uint8Array;
 }
 
-const Task = ({ text, onRemove, index }: ITaskProps): JSX.Element => {
-  const handleRemove = () => {
-    onRemove(index);
-  };
+const Task = ({ text, id, onOpen }: ITaskProps): JSX.Element => {
+  
+  const handleOpening = () => {
+    onOpen(String(id));
+  }
 
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={handleOpening}>
       <View style={styles.item}>
         <View style={styles.itemLeft}>
           <View style={styles.square}></View>
           <Text style={styles.itemText}>{text}</Text>
         </View>
-        <Pressable style={styles.circular} onPress={handleRemove} />
+        <Pressable style={styles.circular} />
       </View>
     </TouchableOpacity>
   );
