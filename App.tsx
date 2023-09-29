@@ -165,7 +165,7 @@ const App = () => {
   }, []);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps='handled'>
       <ImageBackground
         resizeMode="cover"
         style={styles.backgroundImage}

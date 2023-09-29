@@ -9,6 +9,10 @@ import {
   StyleSheet,
   Keyboard,
   Dimensions,
+  ScrollView,
+  Alert,
+  TouchableWithoutFeedback,
+  FlatList,
 } from "react-native";
 
 interface INewTaskFormProps {
@@ -39,11 +43,11 @@ const NewTaskForm = ({ addNewTask }: INewTaskFormProps): JSX.Element => {
         value={newTaskText}
       />
 
-      <TouchableOpacity onPress={handleCreateNewTask} disabled={!newTaskText}>
+      <TouchableWithoutFeedback onPress={handleCreateNewTask}>
         <View style={styles.addWrapper}>
           <Text style={styles.addText}>+</Text>
         </View>
-      </TouchableOpacity>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };
@@ -63,13 +67,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 60,
     left: 10,
-    width: '100%',
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 60,
   },
   addWrapper: {
-    position: 'relative',
+    position: "relative",
     height: 60,
     width: 60,
     backgroundColor: "#fff",
@@ -81,7 +85,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   addText: {
-    position: 'absolute',
+    position: "absolute",
     top: "-15%",
     left: "25%",
     fontSize: 50,
