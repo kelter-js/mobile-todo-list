@@ -8,6 +8,7 @@ import {
   Keyboard,
   ImageBackground,
   Dimensions,
+  Pressable,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
@@ -40,12 +41,21 @@ const backgroundPaths = [
 
 const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
 
+export enum ViewModes {
+  FINISHED = "FINISHED",
+  IN_PROGRESS = "IN_PROGRESS",
+}
+
 const App = () => {
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState<any>(false);
   const [openedTask, setOpenedTask] = useState("");
   const [isModalWindowOpened, setModalOpened] = useState(false);
   const [currentImagePath, setCurrentImagePath] = useState();
+  const [viewMode, setViewMode] = useState<keyof typeof ViewModes>(
+    ViewModes.IN_PROGRESS
+  );
+  const [doneTasks, setDoneTasks] = useState<ITask[]>([]);
 
   const handleResetOpenedTask = useCallback(() => {
     setModalOpened(false);
@@ -143,11 +153,29 @@ const App = () => {
   }, []);
 
   const handleRemoveTask = useCallback(() => {
-    const taskToRemove = tasks.find((item) => item.id === openedTask);
+    if (viewMode === ViewModes.IN_PROGRESS) {
+      const taskToRemove = tasks.find((item) => item.id === openedTask);
 
-    if (taskToRemove) {
-      const taskIndex = tasks.indexOf(taskToRemove);
-      setTasks([...tasks.slice(0, taskIndex), ...tasks.slice(taskIndex + 1)]);
+      if (taskToRemove) {
+        const taskIndex = tasks.indexOf(taskToRemove);
+
+        setDoneTasks((state) => [...state, taskToRemove]);
+
+        setTasks([...tasks.slice(0, taskIndex), ...tasks.slice(taskIndex + 1)]);
+      }
+    }
+
+    if (viewMode === ViewModes.FINISHED) {
+      const taskToRemove = doneTasks.find((item) => item.id === openedTask);
+
+      if (taskToRemove) {
+        const taskIndex = doneTasks.indexOf(taskToRemove);
+
+        setDoneTasks((state) => [
+          ...state.slice(0, taskIndex),
+          ...state.slice(taskIndex + 1),
+        ]);
+      }
     }
 
     setOpenedTask("");
@@ -165,7 +193,10 @@ const App = () => {
   }, []);
 
   return (
-    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps='handled'>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="handled"
+    >
       <ImageBackground
         resizeMode="cover"
         style={styles.backgroundImage}
@@ -176,8 +207,30 @@ const App = () => {
       <View style={styles.contentContainer}>
         <View style={styles.tasksContainer}>
           <Text style={styles.sectionTitle}>Today`s tasks</Text>
+          <View style={styles.sortControlsContainer}>
+            <Pressable
+              style={styles.sortTasksButton}
+              onPress={(e) => {
+                setViewMode(ViewModes.IN_PROGRESS);
+              }}
+            >
+              <Text style={styles.sortTasksButtonText}>Future tasks</Text>
+            </Pressable>
 
-          <TaskList tasks={tasks} onTaskOpen={handleTaskOpen} />
+            <Pressable
+              style={styles.sortTasksButton}
+              onPress={(e) => {
+                setViewMode(ViewModes.FINISHED);
+              }}
+            >
+              <Text style={styles.sortTasksButtonText}>Finished tasks</Text>
+            </Pressable>
+          </View>
+
+          <TaskList
+            tasks={viewMode === ViewModes.IN_PROGRESS ? tasks : doneTasks}
+            onTaskOpen={handleTaskOpen}
+          />
 
           {isModalWindowOpened && (
             <ModalWindow
@@ -185,6 +238,7 @@ const App = () => {
               onCloseModal={handleResetOpenedTask}
               onRemoveTask={handleRemoveTask}
               onCreateReminder={createNewNotification}
+              viewMode={viewMode}
             />
           )}
 
@@ -200,6 +254,14 @@ const styles = StyleSheet.create({
     position: "relative",
     flex: 1,
   },
+  sortControlsContainer: {
+    maxHeight: 45,
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    marginTop: 10,
+  },
   contentContainer: {
     position: "relative",
     flex: 1,
@@ -208,11 +270,29 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 80,
     marginHorizontal: 10,
-    paddingHorizontal: 10,
   },
   sectionTitle: {
     fontSize: 24,
     fontWeight: "bold",
+  },
+  sortTasksButton: {
+    backgroundColor: "#fbeee0",
+    border: "2px solid #422800",
+    borderRadius: 30,
+    boxShadow: "#422800 4px 4px 0 0",
+    color: "#422800",
+    fontWeight: "bold",
+    fontSize: 18,
+    paddingHorizontal: 10,
+    paddingVertical: 18,
+    lineHeight: 50,
+  },
+  sortTasksButtonText: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: "bold",
+    letterSpacing: 0.25,
+    color: "black",
   },
   backgroundImage: {
     position: "absolute",

@@ -26,9 +26,10 @@ const TaskList = ({ tasks, onTaskOpen }: ITaskListProps): JSX.Element => {
 const styles = StyleSheet.create({
   listContainer: {
     height: 300,
+    paddingTop: 10,
   },
   items: {
-    marginTop: 30,
+    marginTop: 10,
   },
 });
 

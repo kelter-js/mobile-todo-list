@@ -38,13 +38,18 @@ const Task = ({ text, id, onOpen }: ITaskProps): JSX.Element => {
 
 const styles = StyleSheet.create({
   item: {
-    backgroundColor: "#fff",
+   
     padding: 15,
-    borderRadius: 10,
+   
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 20,
+    backgroundColor: "#fbeee0",
+    border: "2px solid #422800",
+    borderRadius: 30,
+    boxShadow: "#422800 4px 4px 0 0",
+    color: "#422800",
   },
   itemLeft: {
     flexDirection: "row",

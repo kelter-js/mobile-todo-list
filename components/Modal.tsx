@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useState, useCallback } from "react";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 
 import { DatePicker } from "./DatePicker";
+import { ViewModes } from "../App";
 
 interface IModalWindowProps {
   taskId?: string;
@@ -17,13 +18,19 @@ interface IModalWindowProps {
   onCreateReminder: (date: Date) => void;
   onRemoveTask: VoidFunction;
   onCloseModal: VoidFunction;
+  viewMode: keyof typeof ViewModes;
 }
+
+const removeButtonDescription = (state: keyof typeof ViewModes) => {
+  return state === ViewModes.IN_PROGRESS ? "Mark as done" : "Delete";
+};
 
 const ModalWindow = ({
   onCloseModal,
   onRemoveTask,
   onCreateReminder,
   taskId,
+  viewMode,
 }: IModalWindowProps): JSX.Element => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isDateSelected, setDateSelected] = useState(false);
@@ -44,14 +51,20 @@ const ModalWindow = ({
                   style={styles.closeModalButton}
                   onPress={onCloseModal}
                 >
-                  <Ionicons name="ios-close-circle-outline" size={28} color="#333" />
+                  <Ionicons
+                    name="ios-close-circle-outline"
+                    size={28}
+                    color="#333"
+                  />
                 </TouchableOpacity>
 
                 <Pressable
                   style={[styles.button, styles.buttonClose]}
                   onPress={onRemoveTask}
                 >
-                  <Text style={styles.textStyle}>Remove</Text>
+                  <Text style={styles.textStyle}>
+                    {removeButtonDescription(viewMode)}
+                  </Text>
                 </Pressable>
 
                 <TouchableOpacity disabled={!isDateSelected}>
@@ -103,7 +116,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   centeredViewContainer: {
-    position: 'relative',
+    position: "relative",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -147,10 +160,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   closeModalButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 5,
     right: 5,
-  }
+  },
 });
 
 export default ModalWindow;
