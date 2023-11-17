@@ -180,7 +180,24 @@ const App = () => {
 
     setOpenedTask("");
     setModalOpened(false);
-  }, [tasks, openedTask]);
+  }, [tasks, openedTask, doneTasks]);
+
+  const handleMoveTaskBack = useCallback(() => {
+    const taskToMoveBack = doneTasks.find((item) => item.id === openedTask);
+
+    if (taskToMoveBack) {
+      const taskIndex = doneTasks.indexOf(taskToMoveBack);
+
+      setTasks((state) => [...state, taskToMoveBack]);
+      setDoneTasks((state) => [
+        ...state.slice(0, taskIndex),
+        ...state.slice(taskIndex + 1),
+      ]);
+    }
+
+    setOpenedTask("");
+    setModalOpened(false);
+  }, [openedTask, doneTasks]);
 
   useEffect(() => {
     const timerId = setInterval(() => {
@@ -237,6 +254,7 @@ const App = () => {
               taskId={String(openedTask)}
               onCloseModal={handleResetOpenedTask}
               onRemoveTask={handleRemoveTask}
+              onMoveTaskBack={handleMoveTaskBack}
               onCreateReminder={createNewNotification}
               viewMode={viewMode}
             />

@@ -17,6 +17,7 @@ interface IModalWindowProps {
   taskText?: string;
   onCreateReminder: (date: Date) => void;
   onRemoveTask: VoidFunction;
+  onMoveTaskBack: VoidFunction;
   onCloseModal: VoidFunction;
   viewMode: keyof typeof ViewModes;
 }
@@ -28,6 +29,7 @@ const removeButtonDescription = (state: keyof typeof ViewModes) => {
 const ModalWindow = ({
   onCloseModal,
   onRemoveTask,
+  onMoveTaskBack,
   onCreateReminder,
   taskId,
   viewMode,
@@ -39,6 +41,8 @@ const ModalWindow = ({
     setDateSelected(true);
     setSelectedDate(date);
   }, []);
+
+  const isCurrentViewModeFinished = viewMode === ViewModes.FINISHED;
 
   return (
     <View style={styles.centeredViewContainer}>
@@ -66,6 +70,17 @@ const ModalWindow = ({
                     {removeButtonDescription(viewMode)}
                   </Text>
                 </Pressable>
+
+                {isCurrentViewModeFinished && (
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={onMoveTaskBack}
+                  >
+                    <Text style={styles.textStyle}>
+                      Mark as unfinished task
+                    </Text>
+                  </Pressable>
+                )}
 
                 <TouchableOpacity disabled={!isDateSelected}>
                   <Pressable
