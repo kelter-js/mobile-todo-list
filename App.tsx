@@ -226,7 +226,11 @@ const App = () => {
           <Text style={styles.sectionTitle}>Today`s tasks</Text>
           <View style={styles.sortControlsContainer}>
             <Pressable
-              style={styles.sortTasksButton}
+              style={[
+                styles.sortTasksButton,
+                viewMode === ViewModes.IN_PROGRESS &&
+                  styles.sortTasksButtonSelected,
+              ]}
               onPress={(e) => {
                 setViewMode(ViewModes.IN_PROGRESS);
               }}
@@ -235,7 +239,11 @@ const App = () => {
             </Pressable>
 
             <Pressable
-              style={styles.sortTasksButton}
+              style={[
+                styles.sortTasksButton,
+                viewMode === ViewModes.FINISHED &&
+                  styles.sortTasksButtonSelected,
+              ]}
               onPress={(e) => {
                 setViewMode(ViewModes.FINISHED);
               }}
@@ -278,7 +286,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     flexDirection: "row",
-    marginTop: 10,
+    marginTop: 20,
+    marginBottom: 10,
   },
   contentContainer: {
     position: "relative",
@@ -297,13 +306,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#fbeee0",
     border: "2px solid #422800",
     borderRadius: 30,
-    boxShadow: "#422800 4px 4px 0 0",
     color: "#422800",
-    fontWeight: "bold",
-    fontSize: 18,
+    fontWeight: "400",
+    fontSize: 16,
     paddingHorizontal: 10,
     paddingVertical: 18,
     lineHeight: 50,
+    transform: [{ scale: 0.9 }],
+  },
+  sortTasksButtonSelected: {
+    boxShadow: "#422800 -4px -4px 0 0",
+    fontWeight: "bold",
+    fontSize: 18,
+    transform: [{ scale: 1 }],
   },
   sortTasksButtonText: {
     fontSize: 16,
