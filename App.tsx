@@ -38,6 +38,9 @@ const backgroundPaths = [
 ];
 
 const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
+//todo: create repeatable type of tasks
+//todo: remove task that is not repeatable immediately
+//todo: render checkbock - remove immediately for repeatable tasks
 
 const App = (): JSX.Element => {
   const [expoPushToken, setExpoPushToken] = useState("");
