@@ -7,25 +7,23 @@ import {
   AppState,
   Keyboard,
   ImageBackground,
-  Dimensions,
-  Pressable,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import uuid from "react-native-uuid";
 
 import { storeData } from "./utils/storage";
-import { ITask } from "./components/Task";
-import TaskList from "./components/TaskList";
-import NewTaskForm from "./components/NewTaskForm";
-import getRandom from "./utils/getRandom";
-import ModalWindow from "./components/Modal";
+import { ITask, ViewModes } from "./view";
 import {
   schedulePushNotification,
   registerForPushNotificationsAsync,
 } from "./utils/notifications";
+import TaskList from "./components/TaskList";
+import NewTaskForm from "./components/NewTaskForm";
+import getRandom from "./utils/getRandom";
+import ModalWindow from "./components/Modal";
+import TaskFilterButtons from "./components/TaskFilterButtons";
 
-const screenWidth = Dimensions.get("window").width;
 const backgroundPaths = [
   require("./assets/background/nature-1.jpg"),
   require("./assets/background/nature-2.jpg"),
@@ -41,14 +39,10 @@ const backgroundPaths = [
 
 const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
 
-export enum ViewModes {
-  FINISHED = "FINISHED",
-  IN_PROGRESS = "IN_PROGRESS",
-}
-
-const App = () => {
+const App = (): JSX.Element => {
   const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] = useState<any>(false);
+  const [notification, setNotification] =
+    useState<Notifications.Notification | null>(null);
   const [openedTask, setOpenedTask] = useState("");
   const [isModalWindowOpened, setModalOpened] = useState(false);
   const [currentImagePath, setCurrentImagePath] = useState();
@@ -70,7 +64,7 @@ const App = () => {
     { id: uuid.v1(), text: "first task" },
     { id: uuid.v1(), text: "second task" },
     { id: uuid.v1(), text: "test task" },
-  ] as ITask[]);
+  ]);
 
   const handleCreateNewTask = (taskText: string) => {
     Keyboard.dismiss();
@@ -79,9 +73,6 @@ const App = () => {
 
   const notificationListener = useRef<any>();
   const responseListener = useRef<any>();
-
-  console.log("opened task:", openedTask);
-  console.log("isModalWindowOpened in app:", isModalWindowOpened);
 
   useEffect(() => {
     if (Boolean(openedTask.trim())) {
@@ -209,6 +200,8 @@ const App = () => {
     return () => clearInterval(timerId);
   }, []);
 
+  const isViewModeInProgress = viewMode === ViewModes.IN_PROGRESS;
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
@@ -219,41 +212,17 @@ const App = () => {
         style={styles.backgroundImage}
         source={currentImagePath || prefabImage}
       />
-      <View style={styles.blurred} />
 
       <View style={styles.contentContainer}>
         <View style={styles.tasksContainer}>
           <Text style={styles.sectionTitle}>Today`s tasks</Text>
-          <View style={styles.sortControlsContainer}>
-            <Pressable
-              style={[
-                styles.sortTasksButton,
-                viewMode === ViewModes.IN_PROGRESS &&
-                  styles.sortTasksButtonSelected,
-              ]}
-              onPress={(e) => {
-                setViewMode(ViewModes.IN_PROGRESS);
-              }}
-            >
-              <Text style={styles.sortTasksButtonText}>Future tasks</Text>
-            </Pressable>
-
-            <Pressable
-              style={[
-                styles.sortTasksButton,
-                viewMode === ViewModes.FINISHED &&
-                  styles.sortTasksButtonSelected,
-              ]}
-              onPress={(e) => {
-                setViewMode(ViewModes.FINISHED);
-              }}
-            >
-              <Text style={styles.sortTasksButtonText}>Finished tasks</Text>
-            </Pressable>
-          </View>
+          <TaskFilterButtons
+            setViewMode={setViewMode}
+            isViewModeInProgress={isViewModeInProgress}
+          />
 
           <TaskList
-            tasks={viewMode === ViewModes.IN_PROGRESS ? tasks : doneTasks}
+            tasks={isViewModeInProgress ? tasks : doneTasks}
             onTaskOpen={handleTaskOpen}
           />
 
@@ -264,7 +233,7 @@ const App = () => {
               onRemoveTask={handleRemoveTask}
               onMoveTaskBack={handleMoveTaskBack}
               onCreateReminder={createNewNotification}
-              viewMode={viewMode}
+              isViewModeInProgress={isViewModeInProgress}
             />
           )}
 
@@ -280,15 +249,6 @@ const styles = StyleSheet.create({
     position: "relative",
     flex: 1,
   },
-  sortControlsContainer: {
-    maxHeight: 45,
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "space-between",
-    flexDirection: "row",
-    marginTop: 20,
-    marginBottom: 10,
-  },
   contentContainer: {
     position: "relative",
     flex: 1,
@@ -302,44 +262,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
   },
-  sortTasksButton: {
-    backgroundColor: "#fbeee0",
-    border: "2px solid #422800",
-    borderRadius: 30,
-    color: "#422800",
-    fontWeight: "400",
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 18,
-    lineHeight: 50,
-    transform: [{ scale: 0.9 }],
-  },
-  sortTasksButtonSelected: {
-    boxShadow: "#422800 -4px -4px 0 0",
-    fontWeight: "bold",
-    fontSize: 18,
-    transform: [{ scale: 1 }],
-  },
-  sortTasksButtonText: {
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: "bold",
-    letterSpacing: 0.25,
-    color: "black",
-  },
   backgroundImage: {
     position: "absolute",
     width: "100%",
     height: "100%",
-  },
-  blurred: {
-    position: "absolute",
-    top: 70,
-    left: 10,
-    width: screenWidth - 20,
-    height: "50%",
-    background: "rgba(0,0,0,0.8)",
-    backdropFilter: "saturate(180%) blur(10px)",
   },
 });
 
