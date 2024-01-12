@@ -21,7 +21,7 @@ const TaskList: FC<ITaskListProps> = ({ tasks, onTaskOpen }) => (
 
 const styles = StyleSheet.create({
   listContainer: {
-    height: 300,
+    height: 316,
     paddingTop: 10,
   },
   items: {

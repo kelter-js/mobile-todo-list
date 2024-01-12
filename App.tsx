@@ -41,6 +41,7 @@ const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
 //todo: create repeatable type of tasks
 //todo: remove task that is not repeatable immediately
 //todo: render checkbock - remove immediately for repeatable tasks
+//todo: split states into one global and use reducer
 
 const App = (): JSX.Element => {
   const [expoPushToken, setExpoPushToken] = useState("");
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
   },
   tasksContainer: {
     flex: 1,
-    marginTop: 80,
+    marginTop: 60,
     marginHorizontal: 10,
   },
   sectionTitle: {

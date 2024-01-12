@@ -14,6 +14,9 @@ import { INewTaskFormProps } from "../../view";
 
 const IOS_TYPE = "ios";
 
+//todo: просто оставляем кнопку с + большую, когда нажимаем - модальное окно
+//в модальном окне инпут для текста задачи и чекбокс для того чтобы отметить, задача повторяемая или нет
+//по нажатию закрываем модалку
 const NewTaskForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
   const [newTaskText, setNewTaskText] = useState("");
 
@@ -22,7 +25,9 @@ const NewTaskForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
     addNewTask(newTaskText);
     setNewTaskText("");
   };
+
   const isPlatformIOS = Platform.OS === IOS_TYPE;
+  const isTaskReadyToAdd = !newTaskText;
 
   return (
     <KeyboardAvoidingView
@@ -36,8 +41,16 @@ const NewTaskForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
         value={newTaskText}
       />
 
-      <TouchableWithoutFeedback onPress={handleCreateNewTask}>
-        <View style={styles.addWrapper}>
+      <TouchableWithoutFeedback
+        onPress={handleCreateNewTask}
+        disabled={isTaskReadyToAdd}
+      >
+        <View
+          style={[
+            styles.addWrapper,
+            isTaskReadyToAdd && styles.addWrapperDisabled,
+          ]}
+        >
           <Text style={styles.addText}>+</Text>
         </View>
       </TouchableWithoutFeedback>
@@ -76,6 +89,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderColor: "#c0c0c0",
     borderWidth: 1,
+  },
+  addWrapperDisabled: {
+    opacity: 0.3,
   },
   addText: {
     position: "absolute",
