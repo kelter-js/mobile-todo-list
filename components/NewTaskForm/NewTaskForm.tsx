@@ -11,14 +11,17 @@ import {
 } from "react-native";
 
 import { INewTaskFormProps } from "../../view";
+import ModalWindow from "../Modal";
 
 const IOS_TYPE = "ios";
 
 //todo: просто оставляем кнопку с + большую, когда нажимаем - модальное окно
 //в модальном окне инпут для текста задачи и чекбокс для того чтобы отметить, задача повторяемая или нет
 //по нажатию закрываем модалку
+//в новом модальном окне расписать всё более полно - есть тайтл и будет дескрипшн у каждой задачи
 const NewTaskForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
   const [newTaskText, setNewTaskText] = useState("");
+  const [isTaskFormOpened, setTaskFormOpened] = useState(false);
 
   const handleCreateNewTask = () => {
     Keyboard.dismiss();
@@ -28,6 +31,9 @@ const NewTaskForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
 
   const isPlatformIOS = Platform.OS === IOS_TYPE;
   const isTaskReadyToAdd = !newTaskText;
+  const toggleTaskForm = () => {
+    setTaskFormOpened((state) => !state);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -45,12 +51,7 @@ const NewTaskForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
         onPress={handleCreateNewTask}
         disabled={isTaskReadyToAdd}
       >
-        <View
-          style={[
-            styles.addWrapper,
-            isTaskReadyToAdd && styles.addWrapperDisabled,
-          ]}
-        >
+        <View style={styles.addWrapper}>
           <Text style={styles.addText}>+</Text>
         </View>
       </TouchableWithoutFeedback>

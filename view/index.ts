@@ -1,11 +1,15 @@
 export interface IModalWindowProps {
+  onCloseModal: VoidFunction;
+  children: React.ReactNode;
+}
+
+export interface TaskFormProps {
+  isViewModeInProgress: boolean;
+  onRemoveTask: VoidFunction;
+  onMoveTaskBack: VoidFunction;
   taskId?: string;
   taskText?: string;
   onCreateReminder: (date: Date) => void;
-  onRemoveTask: VoidFunction;
-  onMoveTaskBack: VoidFunction;
-  onCloseModal: VoidFunction;
-  isViewModeInProgress: boolean;
 }
 
 export interface INewTaskFormProps {

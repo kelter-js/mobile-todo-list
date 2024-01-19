@@ -22,6 +22,7 @@ import TaskList from "./components/TaskList";
 import NewTaskForm from "./components/NewTaskForm";
 import getRandom from "./utils/getRandom";
 import ModalWindow from "./components/Modal";
+import TaskForm from "./components/TaskForm";
 import TaskFilterButtons from "./components/TaskFilterButtons";
 
 const backgroundPaths = [
@@ -231,14 +232,15 @@ const App = (): JSX.Element => {
           />
 
           {isModalWindowOpened && (
-            <ModalWindow
-              taskId={String(openedTask)}
-              onCloseModal={handleResetOpenedTask}
-              onRemoveTask={handleRemoveTask}
-              onMoveTaskBack={handleMoveTaskBack}
-              onCreateReminder={createNewNotification}
-              isViewModeInProgress={isViewModeInProgress}
-            />
+            <ModalWindow onCloseModal={handleResetOpenedTask}>
+              <TaskForm
+                taskId={String(openedTask)}
+                onRemoveTask={handleRemoveTask}
+                onMoveTaskBack={handleMoveTaskBack}
+                onCreateReminder={createNewNotification}
+                isViewModeInProgress={isViewModeInProgress}
+              />
+            </ModalWindow>
           )}
 
           <NewTaskForm addNewTask={handleCreateNewTask} />
