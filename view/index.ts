@@ -1,6 +1,7 @@
 export interface IModalWindowProps {
   onCloseModal: VoidFunction;
   children: React.ReactNode;
+  isWindowOpened: boolean;
 }
 
 export interface TaskFormProps {

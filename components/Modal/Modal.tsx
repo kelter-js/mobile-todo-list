@@ -4,32 +4,42 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { IModalWindowProps } from "../../view";
 
-const ModalWindow: FC<IModalWindowProps> = ({ onCloseModal, children }) => (
-  <View style={styles.centeredViewContainer}>
-    <Modal animationType="fade" transparent={true} visible={true}>
-      <TouchableOpacity onPress={onCloseModal} style={styles.modalOverlay}>
-        <TouchableOpacity activeOpacity={1}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <TouchableOpacity
-                style={styles.closeModalButton}
-                onPress={onCloseModal}
-              >
-                <Ionicons
-                  name="ios-close-circle-outline"
-                  size={28}
-                  color="#333"
-                />
-              </TouchableOpacity>
+const ModalWindow: FC<IModalWindowProps> = ({
+  onCloseModal,
+  children,
+  isWindowOpened,
+}) => {
+  if (!isWindowOpened) {
+    return null;
+  }
 
-              {children}
+  return (
+    <View style={styles.centeredViewContainer}>
+      <Modal animationType="fade" transparent={true} visible={true}>
+        <TouchableOpacity onPress={onCloseModal} style={styles.modalOverlay}>
+          <TouchableOpacity activeOpacity={1}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <TouchableOpacity
+                  style={styles.closeModalButton}
+                  onPress={onCloseModal}
+                >
+                  <Ionicons
+                    name="ios-close-circle-outline"
+                    size={28}
+                    color="#333"
+                  />
+                </TouchableOpacity>
+
+                {children}
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         </TouchableOpacity>
-      </TouchableOpacity>
-    </Modal>
-  </View>
-);
+      </Modal>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   modalOverlay: {
