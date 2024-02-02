@@ -19,7 +19,7 @@ import {
   registerForPushNotificationsAsync,
 } from "./utils/notifications";
 import TaskList from "./components/TaskList";
-import NewTaskForm from "./components/NewTaskForm";
+import NewTaskContainer from "./components/NewTaskContainer";
 import getRandom from "./utils/getRandom";
 import ModalWindow from "./components/Modal";
 import TaskForm from "./components/TaskForm";
@@ -231,19 +231,20 @@ const App = (): JSX.Element => {
             onTaskOpen={handleTaskOpen}
           />
 
-          {isModalWindowOpened && (
-            <ModalWindow onCloseModal={handleResetOpenedTask}>
-              <TaskForm
-                taskId={String(openedTask)}
-                onRemoveTask={handleRemoveTask}
-                onMoveTaskBack={handleMoveTaskBack}
-                onCreateReminder={createNewNotification}
-                isViewModeInProgress={isViewModeInProgress}
-              />
-            </ModalWindow>
-          )}
+          <ModalWindow
+            onCloseModal={handleResetOpenedTask}
+            isWindowOpened={isModalWindowOpened}
+          >
+            <TaskForm
+              taskId={String(openedTask)}
+              onRemoveTask={handleRemoveTask}
+              onMoveTaskBack={handleMoveTaskBack}
+              onCreateReminder={createNewNotification}
+              isViewModeInProgress={isViewModeInProgress}
+            />
+          </ModalWindow>
 
-          <NewTaskForm addNewTask={handleCreateNewTask} />
+          <NewTaskContainer addNewTask={handleCreateNewTask} />
         </View>
       </View>
     </ScrollView>
