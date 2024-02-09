@@ -1,8 +1,17 @@
-import { Modal, StyleSheet, View, TouchableOpacity } from "react-native";
+import {
+  Modal,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import { FC } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
 import { IModalWindowProps } from "../../view";
+import { getPercentage } from "../../utils/getPercentage";
+
+const windowWidth = Dimensions.get("window").width;
 
 const ModalWindow: FC<IModalWindowProps> = ({
   onCloseModal,
@@ -67,7 +76,6 @@ const styles = StyleSheet.create({
   modalView: {
     flexDirection: "column",
     justifyContent: "space-between",
-    margin: 20,
     backgroundColor: "white",
     borderRadius: 20,
     padding: 15,
@@ -82,7 +90,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     height: 290,
-    width: "90%",
+    width: getPercentage(90, windowWidth),
   },
   closeModalButton: {
     position: "absolute",
