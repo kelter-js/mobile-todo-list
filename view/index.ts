@@ -1,3 +1,5 @@
+import { GestureResponderEvent } from "react-native";
+
 export interface IModalWindowProps {
   onCloseModal: VoidFunction;
   children: React.ReactNode;
@@ -20,6 +22,11 @@ export interface INewTaskFormProps {
 export interface ITask {
   text: string;
   id: string | Uint8Array;
+}
+
+export interface CustomCheckboxProps {
+  value: boolean;
+  toggleCheckbox: (event: GestureResponderEvent) => void;
 }
 
 export interface ITaskProps extends ITask {
