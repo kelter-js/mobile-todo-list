@@ -7,11 +7,13 @@ import Task from "../Task/Task";
 const TaskList: FC<ITaskListProps> = ({ tasks, onTaskOpen }) => (
   <View style={styles.listContainer}>
     <ScrollView style={styles.items}>
-      {tasks.map((item, index) => (
+      {tasks.map(({ id, description, title, isRepeatable }, index) => (
         <Task
-          id={String(item.id)}
-          text={item.text}
-          key={index}
+          id={id.toString()}
+          description={description}
+          title={title}
+          isRepeatable={isRepeatable}
+          key={id.toString()}
           onOpen={onTaskOpen}
         />
       ))}

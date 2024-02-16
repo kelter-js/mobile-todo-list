@@ -16,11 +16,13 @@ export interface TaskFormProps {
 }
 
 export interface INewTaskFormProps {
-  addNewTask: (text: string) => void;
+  addNewTask: (taskData: Omit<ITask, "id">) => void;
 }
 
 export interface ITask {
-  text: string;
+  description: string;
+  title: string;
+  isRepeatable: boolean;
   id: string | Uint8Array;
 }
 
