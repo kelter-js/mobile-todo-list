@@ -7,6 +7,11 @@ import DatePicker from "../DatePicker";
 const removeButtonDescription = (isViewModeInProgress: boolean) =>
   isViewModeInProgress ? "Mark as done" : "Delete";
 
+//show task description and title here
+//place buttons near bottom of modal
+//replace delete button with trash icon
+//replace mark as done/mark as unfinished with icons(think about it)
+//create accent on which date to remind is settled
 const TaskForm: FC<TaskFormProps> = ({
   onRemoveTask,
   onMoveTaskBack,
@@ -42,21 +47,27 @@ const TaskForm: FC<TaskFormProps> = ({
         </Pressable>
       )}
 
-      <TouchableOpacity disabled={!isDateSelected}>
-        <Pressable
-          style={[
-            styles.button,
-            styles.buttonClose,
-            !isDateSelected && styles.buttonDisabled,
-          ]}
-          disabled={!isDateSelected}
-          onPress={() => onCreateReminder(selectedDate)}
-        >
-          <Text style={styles.textStyle}>Remind me about this task later</Text>
-        </Pressable>
-      </TouchableOpacity>
+      {isViewModeInProgress && (
+        <TouchableOpacity disabled={!isDateSelected}>
+          <Pressable
+            style={[
+              styles.button,
+              styles.buttonClose,
+              !isDateSelected && styles.buttonDisabled,
+            ]}
+            disabled={!isDateSelected}
+            onPress={() => onCreateReminder(selectedDate)}
+          >
+            <Text style={styles.textStyle}>
+              Remind me about this task later
+            </Text>
+          </Pressable>
+        </TouchableOpacity>
+      )}
 
-      <DatePicker setSelectedDate={handleDateSelection} date={selectedDate} />
+      {isViewModeInProgress && (
+        <DatePicker setSelectedDate={handleDateSelection} date={selectedDate} />
+      )}
     </>
   );
 };
@@ -68,7 +79,6 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 20,
     padding: 10,
-    marginBottom: 22,
     elevation: 2,
   },
   buttonClose: {
