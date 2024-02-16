@@ -47,15 +47,15 @@ export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
       <View style={styles.container}>
         <View style={styles.buttonsContainer}>
           <View style={styles.initiateDateSelectionButton}>
-            <Button onPress={showDatepicker} title="Show date picker!" />
+            <Button onPress={showDatepicker} title="Select date" />
           </View>
           <View style={styles.initiateDateSelectionButton}>
-            <Button onPress={showTimepicker} title="Show time picker!" />
+            <Button onPress={showTimepicker} title="Select time" />
           </View>
+          <Text style={styles.currentlySelectedDate}>
+            selected: {date.toLocaleString()}
+          </Text>
         </View>
-        <Text style={styles.currentlySelectedDate}>
-          selected: {date.toLocaleString()}
-        </Text>
       </View>
 
       {show && (
@@ -82,15 +82,16 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "center",
+    paddingBottom: 50
   },
   initiateDateSelectionButton: {
     flexGrow: 1,
     marginRight: 5,
+    width: "50%",
   },
   currentlySelectedDate: {
     position: "absolute",
     top: 75,
-    left: "18%",
     textAlign: "center",
   },
 });
