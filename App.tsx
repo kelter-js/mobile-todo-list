@@ -66,14 +66,29 @@ const App = (): JSX.Element => {
   }, []);
 
   const [tasks, setTasks] = useState<ITask[]>([
-    { id: uuid.v1(), text: "first task" },
-    { id: uuid.v1(), text: "second task" },
-    { id: uuid.v1(), text: "test task" },
+    {
+      id: uuid.v1(),
+      description: "blah-blah",
+      title: "first task",
+      isRepeatable: false,
+    },
+    {
+      id: uuid.v1(),
+      description: "bleh-bleh",
+      title: "second task",
+      isRepeatable: false,
+    },
+    {
+      id: uuid.v1(),
+      description: "bluh-bluh",
+      title: "third task",
+      isRepeatable: false,
+    },
   ]);
 
-  const handleCreateNewTask = (taskText: string) => {
+  const handleCreateNewTask = (taskData: Omit<ITask, "id">) => {
     Keyboard.dismiss();
-    setTasks((state) => [...state, { id: uuid.v1(), text: taskText }]);
+    setTasks((state) => [...state, { id: uuid.v1(), ...taskData }]);
   };
 
   const notificationListener = useRef<any>();
