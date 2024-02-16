@@ -9,7 +9,13 @@ import {
 
 import { ITaskProps } from "../../view";
 
-const Task: FC<ITaskProps> = ({ text, id, onOpen }) => {
+const Task: FC<ITaskProps> = ({
+  description,
+  title,
+  isRepeatable,
+  id,
+  onOpen,
+}) => {
   const handleOpening = () => {
     onOpen(String(id));
   };
@@ -19,7 +25,10 @@ const Task: FC<ITaskProps> = ({ text, id, onOpen }) => {
       <View style={styles.item}>
         <View style={styles.itemLeft}>
           <View style={styles.square}></View>
-          <Text style={styles.itemText}>{text}</Text>
+          <View style={styles.taskContainer}>
+            <Text style={styles.taskTitle}>{title}</Text>
+            <Text style={styles.taskDescription}>{description}</Text>
+          </View>
         </View>
         <Pressable style={styles.circular} />
       </View>
@@ -28,8 +37,17 @@ const Task: FC<ITaskProps> = ({ text, id, onOpen }) => {
 };
 
 const styles = StyleSheet.create({
+  taskContainer: {
+    flex: 1,
+    width: "100%",
+  },
+  taskTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  taskDescription: { fontSize: 16, fontWeight: "400" },
   item: {
-    padding: 15,
+    padding: 10,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -52,9 +70,6 @@ const styles = StyleSheet.create({
     opacity: 0.4,
     borderRadius: 5,
     marginRight: 15,
-  },
-  itemText: {
-    maxWidth: "80%",
   },
   circular: {
     height: 24,
