@@ -39,10 +39,13 @@ const backgroundPaths = [
 ];
 
 const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
-//todo: create repeatable type of tasks
+
 //todo: remove task that is not repeatable immediately
-//todo: render checkbock - remove immediately for repeatable tasks
 //todo: split states into one global and use reducer
+//todo: we should store tasks at some kind of local storage
+//todo: the main idea is - when user reopen application, show him loader, while loader spinning
+// we just map through tasks array, check task timer - if timer is ended - task should be removed, if its not repeatable
+//if its repeatable - task should be marked as done
 
 const App = (): JSX.Element => {
   const [expoPushToken, setExpoPushToken] = useState("");
@@ -55,6 +58,7 @@ const App = (): JSX.Element => {
     ViewModes.IN_PROGRESS
   );
   const [doneTasks, setDoneTasks] = useState<ITask[]>([]);
+  const [isTaskEditMode, setTaskEditMode] = useState(false);
 
   const handleResetOpenedTask = useCallback(() => {
     setModalOpened(false);
@@ -222,6 +226,12 @@ const App = (): JSX.Element => {
 
   const isViewModeInProgress = viewMode === ViewModes.IN_PROGRESS;
 
+  const [openedTaskData] = tasks.filter((item) => item.id === openedTask);
+
+  const handleOpenViewMode = () => {
+    setTaskEditMode((state) => !state);
+  };
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
@@ -248,7 +258,7 @@ const App = (): JSX.Element => {
 
           <ModalWindow
             onCloseModal={handleResetOpenedTask}
-            isWindowOpened={isModalWindowOpened}
+            isWindowOpened={isModalWindowOpened && !isTaskEditMode}
           >
             <TaskForm
               taskId={String(openedTask)}
@@ -256,6 +266,8 @@ const App = (): JSX.Element => {
               onMoveTaskBack={handleMoveTaskBack}
               onCreateReminder={createNewNotification}
               isViewModeInProgress={isViewModeInProgress}
+              task={openedTaskData}
+              onOpenEditMode={handleOpenViewMode}
             />
           </ModalWindow>
 

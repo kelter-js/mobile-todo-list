@@ -12,23 +12,23 @@ import { Feather } from "@expo/vector-icons";
 
 import { INewTaskFormProps } from "../../view";
 
-//в модальном окне инпут для текста задачи и чекбокс для того чтобы отметить, задача повторяемая или нет
-//в новом модальном окне расписать всё более полно - есть тайтл и будет дескрипшн у каждой задачи
-//checkbox
-//title
-//description
 const NewTaskModalForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
   const [newTaskText, setNewTaskText] = useState("");
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [isRepeatableTask, setRepeatableTask] = useState(false);
-  console.log("newTaskText", newTaskText);
 
   const handleCreateNewTask = () => {
     Keyboard.dismiss();
-    addNewTask(newTaskText);
+    addNewTask({
+      description: newTaskText,
+      title: newTaskTitle,
+      isRepeatable: isRepeatableTask,
+    });
     setNewTaskText("");
     setNewTaskTitle("");
+    setRepeatableTask(false);
   };
+
   const toggleCheckbox = () => {
     setRepeatableTask((state) => !state);
   };
@@ -65,6 +65,7 @@ const NewTaskModalForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
       <Pressable
         style={[styles.button, isTaskEmpty && styles.buttonDisabled]}
         disabled={isTaskEmpty}
+        onPress={handleCreateNewTask}
       >
         <Text style={styles.newTaskText}>Create new task</Text>
       </Pressable>

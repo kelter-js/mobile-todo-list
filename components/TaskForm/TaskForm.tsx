@@ -7,11 +7,13 @@ import DatePicker from "../DatePicker";
 const removeButtonDescription = (isViewModeInProgress: boolean) =>
   isViewModeInProgress ? "Mark as done" : "Delete";
 
-//show task description and title here
 //place buttons near bottom of modal
 //replace delete button with trash icon
 //replace mark as done/mark as unfinished with icons(think about it)
 //create accent on which date to remind is settled
+//create edit view mode, like pencil icon, user click - we close this modal
+//open modal with NewTaskModalForm but we provide it through props task data
+//and allow to display it and change
 const TaskForm: FC<TaskFormProps> = ({
   onRemoveTask,
   onMoveTaskBack,
