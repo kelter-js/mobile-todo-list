@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -7,7 +7,7 @@ import {
   Pressable,
 } from "react-native";
 
-import { INewTaskFormProps } from "../../view";
+import { INewTaskFormProps, ITask } from "../../view";
 import ModalWindow from "../Modal";
 import NewTaskModalForm from "../NewTaskModalForm";
 
@@ -18,9 +18,14 @@ const NewTaskForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
 
   const isPlatformIOS = Platform.OS === IOS_TYPE;
 
-  const toggleTaskForm = () => {
+  const toggleTaskForm = useCallback(() => {
     setTaskFormOpened((state) => !state);
-  };
+  }, []);
+
+  const handleTaskCreation = useCallback((data: Omit<ITask, "id">) => {
+    addNewTask(data);
+    setTaskFormOpened(false);
+  }, []);
 
   return (
     <KeyboardAvoidingView
@@ -31,7 +36,7 @@ const NewTaskForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
         onCloseModal={toggleTaskForm}
         isWindowOpened={isTaskFormOpened}
       >
-        <NewTaskModalForm addNewTask={addNewTask} />
+        <NewTaskModalForm addNewTask={handleTaskCreation} />
       </ModalWindow>
 
       <Pressable onPress={toggleTaskForm} style={styles.addWrapper}>
@@ -56,7 +61,7 @@ const styles = StyleSheet.create({
     position: "relative",
     height: 60,
     width: 60,
-    backgroundColor: "#fff",
+    backgroundColor: "rgb(251, 238, 224)",
     borderRadius: 60,
     marginLeft: "auto",
     marginRight: 25,
