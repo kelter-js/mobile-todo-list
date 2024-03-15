@@ -1,8 +1,12 @@
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
 import { FC } from "react";
 
 import { ITaskListProps } from "../../view";
 import Task from "../Task/Task";
+
+import { getPercentage } from "../../utils/getPercentage";
+
+const windowHeight = Dimensions.get("window").height;
 
 const TaskList: FC<ITaskListProps> = ({ tasks, onTaskOpen }) => (
   <View style={styles.listContainer}>
@@ -23,11 +27,12 @@ const TaskList: FC<ITaskListProps> = ({ tasks, onTaskOpen }) => (
 
 const styles = StyleSheet.create({
   listContainer: {
-    height: 316,
+    height: getPercentage(78, windowHeight),
     paddingTop: 10,
   },
   items: {
     marginTop: 10,
+    paddingRight: 4,
   },
 });
 

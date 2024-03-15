@@ -13,6 +13,8 @@ export interface TaskFormProps {
   taskId?: string;
   taskText?: string;
   onCreateReminder: (date: Date) => void;
+  onOpenEditMode: VoidFunction;
+  task: ITask;
 }
 
 export interface INewTaskFormProps {
