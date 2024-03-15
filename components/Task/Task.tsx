@@ -6,6 +6,7 @@ import {
   Pressable,
   TouchableOpacity,
 } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { ITaskProps } from "../../view";
 
@@ -25,12 +26,18 @@ const Task: FC<ITaskProps> = ({
       <View style={styles.item}>
         <View style={styles.itemLeft}>
           <View style={styles.square}></View>
+
           <View style={styles.taskContainer}>
             <Text style={styles.taskTitle}>{title}</Text>
             <Text style={styles.taskDescription}>{description}</Text>
           </View>
         </View>
-        <Pressable style={styles.circular} />
+
+        {isRepeatable ? (
+          <MaterialCommunityIcons name="repeat" size={24} color="black" />
+        ) : (
+          <MaterialCommunityIcons name="repeat-off" size={24} color="black" />
+        )}
       </View>
     </TouchableOpacity>
   );
