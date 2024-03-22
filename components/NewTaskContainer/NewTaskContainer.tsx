@@ -13,7 +13,7 @@ import NewTaskModalForm from "../NewTaskModalForm";
 
 const IOS_TYPE = "ios";
 
-const NewTaskForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
+const NewTaskForm: FC<INewTaskFormProps> = ({ onAdd }) => {
   const [isTaskFormOpened, setTaskFormOpened] = useState(false);
 
   const isPlatformIOS = Platform.OS === IOS_TYPE;
@@ -23,7 +23,7 @@ const NewTaskForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
   }, []);
 
   const handleTaskCreation = useCallback((data: Omit<ITask, "id">) => {
-    addNewTask(data);
+    onAdd(data);
     setTaskFormOpened(false);
   }, []);
 
@@ -36,7 +36,7 @@ const NewTaskForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
         onCloseModal={toggleTaskForm}
         isWindowOpened={isTaskFormOpened}
       >
-        <NewTaskModalForm addNewTask={handleTaskCreation} />
+        <NewTaskModalForm onAdd={handleTaskCreation} />
       </ModalWindow>
 
       <Pressable onPress={toggleTaskForm} style={styles.addWrapper}>

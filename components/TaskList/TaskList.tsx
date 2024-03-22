@@ -8,17 +8,18 @@ import { getPercentage } from "../../utils/getPercentage";
 
 const windowHeight = Dimensions.get("window").height;
 
-const TaskList: FC<ITaskListProps> = ({ tasks, onTaskOpen }) => (
+const TaskList: FC<ITaskListProps> = ({ tasks, onTaskOpen, onTaskConfigure }) => (
   <View style={styles.listContainer}>
     <ScrollView style={styles.items}>
       {tasks.map(({ id, description, title, isRepeatable }, index) => (
         <Task
-          id={id.toString()}
+          id={id ? id.toString() : ""}
           description={description}
           title={title}
           isRepeatable={isRepeatable}
-          key={id.toString()}
+          key={id?.toString() ?? index}
           onOpen={onTaskOpen}
+          onConfigure={onTaskConfigure}
         />
       ))}
     </ScrollView>

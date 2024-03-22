@@ -12,14 +12,19 @@ import { Feather } from "@expo/vector-icons";
 
 import { INewTaskFormProps } from "../../view";
 
-const NewTaskModalForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
-  const [newTaskText, setNewTaskText] = useState("");
-  const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [isRepeatableTask, setRepeatableTask] = useState(false);
+
+//need to add validation, we can apply changes if user remove title completely
+const NewTaskModalForm: FC<INewTaskFormProps> = ({ onAdd, task = {} }) => {
+  const [newTaskText, setNewTaskText] = useState(task?.description ?? "");
+  const [newTaskTitle, setNewTaskTitle] = useState(task?.title ?? "");
+  const [isRepeatableTask, setRepeatableTask] = useState(
+    task?.isRepeatable ?? false
+  );
 
   const handleCreateNewTask = () => {
     Keyboard.dismiss();
-    addNewTask({
+    onAdd({
+      ...task,
       description: newTaskText,
       title: newTaskTitle,
       isRepeatable: isRepeatableTask,
@@ -39,16 +44,16 @@ const NewTaskModalForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
     <View style={styles.taskContainer}>
       <TextInput
         style={styles.input}
-        placeholder="Task title"
-        onChangeText={setNewTaskText}
-        value={newTaskText}
+        placeholder="Task description"
+        onChangeText={setNewTaskTitle}
+        value={newTaskTitle}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Task description"
-        onChangeText={setNewTaskTitle}
-        value={newTaskTitle}
+        placeholder="Task title"
+        onChangeText={setNewTaskText}
+        value={newTaskText}
       />
 
       <View>
@@ -67,7 +72,9 @@ const NewTaskModalForm: FC<INewTaskFormProps> = ({ addNewTask }) => {
         disabled={isTaskEmpty}
         onPress={handleCreateNewTask}
       >
-        <Text style={styles.newTaskText}>Create new task</Text>
+        <Text style={styles.newTaskText}>
+          {task ? "Save changes" : "Create new task"}
+        </Text>
       </Pressable>
     </View>
   );

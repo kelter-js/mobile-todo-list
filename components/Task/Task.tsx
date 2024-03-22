@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
   TouchableOpacity,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -16,13 +15,18 @@ const Task: FC<ITaskProps> = ({
   isRepeatable,
   id,
   onOpen,
+  onConfigure
 }) => {
   const handleOpening = () => {
     onOpen(String(id));
   };
 
+  const handleConfigure = () => {
+    onConfigure(String(id));
+  };
+
   return (
-    <TouchableOpacity onPress={handleOpening}>
+    <TouchableOpacity onPress={handleConfigure}>
       <View style={styles.item}>
         <View style={styles.itemLeft}>
           <View style={styles.square}></View>
@@ -33,11 +37,29 @@ const Task: FC<ITaskProps> = ({
           </View>
         </View>
 
-        {isRepeatable ? (
-          <MaterialCommunityIcons name="repeat" size={24} color="black" />
-        ) : (
-          <MaterialCommunityIcons name="repeat-off" size={24} color="black" />
-        )}
+        <View style={styles.controlsContainer}>
+          <View
+            onStartShouldSetResponder={() => true}
+            onTouchEnd={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <TouchableOpacity onPress={handleOpening}>
+              <MaterialCommunityIcons
+                name="calendar-edit"
+                size={24}
+                color="black"
+                style={styles.calendarIcon}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {isRepeatable ? (
+            <MaterialCommunityIcons name="repeat" size={24} color="black" />
+          ) : (
+            <MaterialCommunityIcons name="repeat-off" size={24} color="black" />
+          )}
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -51,6 +73,13 @@ const styles = StyleSheet.create({
   taskTitle: {
     fontSize: 18,
     fontWeight: "700",
+  },
+  controlsContainer: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  calendarIcon: {
+    marginRight: 10,
   },
   taskDescription: { fontSize: 16, fontWeight: "400" },
   item: {

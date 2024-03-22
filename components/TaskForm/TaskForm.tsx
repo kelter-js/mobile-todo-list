@@ -12,8 +12,6 @@ const removeButtonDescription = (isViewModeInProgress: boolean) =>
 //replace mark as done/mark as unfinished with icons(think about it)
 //create accent on which date to remind is settled
 //create edit view mode, like pencil icon, user click - we close this modal
-//open modal with NewTaskModalForm but we provide it through props task data
-//and allow to display it and change
 const TaskForm: FC<TaskFormProps> = ({
   onRemoveTask,
   onMoveTaskBack,

@@ -13,19 +13,19 @@ export interface TaskFormProps {
   taskId?: string;
   taskText?: string;
   onCreateReminder: (date: Date) => void;
-  onOpenEditMode: VoidFunction;
   task: ITask;
 }
 
 export interface INewTaskFormProps {
-  addNewTask: (taskData: Omit<ITask, "id">) => void;
+  onAdd: (taskData: ITask) => void;
+  task?: ITask;
 }
 
 export interface ITask {
   description: string;
   title: string;
   isRepeatable: boolean;
-  id: string | Uint8Array;
+  id?: string | Uint8Array;
 }
 
 export interface CustomCheckboxProps {
@@ -35,12 +35,14 @@ export interface CustomCheckboxProps {
 
 export interface ITaskProps extends ITask {
   onOpen: (id: string) => void;
+  onConfigure: (id: string) => void;
   id: string | Uint8Array;
 }
 
 export interface ITaskListProps {
   tasks: Array<ITask>;
   onTaskOpen: (id: string) => void;
+  onTaskConfigure: (id: string) => void;
 }
 
 export enum ViewModes {

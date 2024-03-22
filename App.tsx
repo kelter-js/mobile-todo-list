@@ -24,6 +24,7 @@ import getRandom from "./utils/getRandom";
 import ModalWindow from "./components/Modal";
 import TaskForm from "./components/TaskForm";
 import TaskFilterButtons from "./components/TaskFilterButtons";
+import NewTaskModalForm from "./components/NewTaskModalForm";
 
 const backgroundPaths = [
   require("./assets/background/nature-1.jpg"),
@@ -47,6 +48,27 @@ const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
 // we just map through tasks array, check task timer - if timer is ended - task should be removed, if its not repeatable
 //if its repeatable - task should be marked as done
 
+const INITIAL_TASKS = [
+  {
+    id: uuid.v1(),
+    description: "blah-blah",
+    title: "first task",
+    isRepeatable: false,
+  },
+  {
+    id: uuid.v1(),
+    description: "bleh-bleh",
+    title: "second task",
+    isRepeatable: false,
+  },
+  {
+    id: uuid.v1(),
+    description: "bluh-bluh",
+    title: "third task",
+    isRepeatable: false,
+  },
+];
+
 const App = (): JSX.Element => {
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] =
@@ -62,6 +84,7 @@ const App = (): JSX.Element => {
 
   const handleResetOpenedTask = useCallback(() => {
     setModalOpened(false);
+    setTaskEditMode(false);
     setOpenedTask("");
   }, []);
 
@@ -69,30 +92,33 @@ const App = (): JSX.Element => {
     setOpenedTask(id);
   }, []);
 
-  const [tasks, setTasks] = useState<ITask[]>([
-    {
-      id: uuid.v1(),
-      description: "blah-blah",
-      title: "first task",
-      isRepeatable: false,
-    },
-    {
-      id: uuid.v1(),
-      description: "bleh-bleh",
-      title: "second task",
-      isRepeatable: false,
-    },
-    {
-      id: uuid.v1(),
-      description: "bluh-bluh",
-      title: "third task",
-      isRepeatable: false,
-    },
-  ]);
+  const handleTaskConfigure = useCallback((id: string) => {
+    setTaskEditMode(true);
+    setOpenedTask(id);
+  }, []);
+
+  const [tasks, setTasks] = useState<ITask[]>(INITIAL_TASKS);
 
   const handleCreateNewTask = (taskData: Omit<ITask, "id">) => {
     Keyboard.dismiss();
     setTasks((state) => [...state, { id: uuid.v1(), ...taskData }]);
+  };
+
+  const handleChangeTask = (taskData: ITask) => {
+    Keyboard.dismiss();
+
+    const [taskToChange] = tasks.filter((task) => task.id === taskData.id);
+    const taskIndex = tasks.indexOf(taskToChange);
+
+    console.log(taskIndex)
+
+    setTasks((state) => [
+      ...state.slice(0, taskIndex),
+      { ...taskData },
+      ...state.slice(taskIndex + 1),
+    ]);
+
+    handleResetOpenedTask();
   };
 
   const notificationListener = useRef<any>();
@@ -228,10 +254,6 @@ const App = (): JSX.Element => {
 
   const [openedTaskData] = tasks.filter((item) => item.id === openedTask);
 
-  const handleOpenViewMode = () => {
-    setTaskEditMode((state) => !state);
-  };
-
   return (
     <ScrollView
       contentContainerStyle={styles.container}
@@ -254,6 +276,7 @@ const App = (): JSX.Element => {
           <TaskList
             tasks={isViewModeInProgress ? tasks : doneTasks}
             onTaskOpen={handleTaskOpen}
+            onTaskConfigure={handleTaskConfigure}
           />
 
           <ModalWindow
@@ -267,11 +290,17 @@ const App = (): JSX.Element => {
               onCreateReminder={createNewNotification}
               isViewModeInProgress={isViewModeInProgress}
               task={openedTaskData}
-              onOpenEditMode={handleOpenViewMode}
             />
           </ModalWindow>
 
-          <NewTaskContainer addNewTask={handleCreateNewTask} />
+          <ModalWindow
+            onCloseModal={handleResetOpenedTask}
+            isWindowOpened={isModalWindowOpened && isTaskEditMode}
+          >
+            <NewTaskModalForm onAdd={handleChangeTask} task={openedTaskData} />
+          </ModalWindow>
+
+          <NewTaskContainer onAdd={handleCreateNewTask} />
         </View>
       </View>
     </ScrollView>
