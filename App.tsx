@@ -13,7 +13,7 @@ import * as Notifications from "expo-notifications";
 import uuid from "react-native-uuid";
 
 import { storeData } from "./utils/storage";
-import { ITask, ViewModes } from "./view";
+import { ITask, ViewModes } from "./models";
 import {
   schedulePushNotification,
   registerForPushNotificationsAsync,

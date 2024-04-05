@@ -8,7 +8,7 @@ import {
 import { FC } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
-import { IModalWindowProps } from "../../view";
+import { IModalWindowProps } from "../../models";
 import { getPercentage } from "../../utils/getPercentage";
 
 const windowWidth = Dimensions.get("window").width;
