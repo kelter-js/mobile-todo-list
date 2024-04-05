@@ -1,7 +1,7 @@
 import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
 import { FC } from "react";
 
-import { ITaskListProps } from "../../view";
+import { ITaskListProps } from "../../models";
 import Task from "../Task/Task";
 
 import { getPercentage } from "../../utils/getPercentage";

@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { ITaskProps } from "../../view";
+import { ITaskProps } from "../../models";
 
 const Task: FC<ITaskProps> = ({
   description,
@@ -24,9 +24,9 @@ const Task: FC<ITaskProps> = ({
   const handleConfigure = () => {
     onConfigure(String(id));
   };
-
+  
   return (
-    <TouchableOpacity onPress={handleConfigure}>
+    <TouchableOpacity onPress={handleOpening}>
       <View style={styles.item}>
         <View style={styles.itemLeft}>
           <View style={styles.square}></View>
@@ -44,7 +44,7 @@ const Task: FC<ITaskProps> = ({
               e.stopPropagation();
             }}
           >
-            <TouchableOpacity onPress={handleOpening}>
+            <TouchableOpacity onPress={handleConfigure}>
               <MaterialCommunityIcons
                 name="calendar-edit"
                 size={24}

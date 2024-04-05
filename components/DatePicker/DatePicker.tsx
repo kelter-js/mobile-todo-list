@@ -18,6 +18,7 @@ interface IDatePickerProps {
   setSelectedDate: (date: Date) => void;
 }
 
+//select time and select date buttons should be replaced or adjusted with icons
 export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
   const [mode, setMode] = useState<AndroidMode>("date");
   const [show, setShow] = useState(false);
@@ -52,9 +53,6 @@ export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
           <View style={styles.initiateDateSelectionButton}>
             <Button onPress={showTimepicker} title="Select time" />
           </View>
-          <Text style={styles.currentlySelectedDate}>
-            selected: {date.toLocaleString()}
-          </Text>
         </View>
       </View>
 

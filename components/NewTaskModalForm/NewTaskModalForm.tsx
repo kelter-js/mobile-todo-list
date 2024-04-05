@@ -10,7 +10,7 @@ import {
 import { CheckBox } from "@rneui/base";
 import { Feather } from "@expo/vector-icons";
 
-import { INewTaskFormProps } from "../../view";
+import { INewTaskFormProps } from "../../models";
 
 
 //need to add validation, we can apply changes if user remove title completely

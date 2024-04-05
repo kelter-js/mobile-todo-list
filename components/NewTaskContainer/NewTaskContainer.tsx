@@ -7,12 +7,12 @@ import {
   Pressable,
 } from "react-native";
 
-import { INewTaskFormProps, ITask } from "../../view";
+import { INewTaskFormProps, ITask } from "../../models";
 import ModalWindow from "../Modal";
 import NewTaskModalForm from "../NewTaskModalForm";
 
 const IOS_TYPE = "ios";
-
+// we should allow user to select remind date for this task at creation form i guess
 const NewTaskForm: FC<INewTaskFormProps> = ({ onAdd }) => {
   const [isTaskFormOpened, setTaskFormOpened] = useState(false);
 
