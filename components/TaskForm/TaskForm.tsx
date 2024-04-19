@@ -1,4 +1,10 @@
-import { Pressable, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  Pressable,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  View,
+} from "react-native";
 import { FC, useCallback, useEffect, useState } from "react";
 
 import { TaskFormProps } from "../../models";
@@ -32,8 +38,11 @@ const TaskForm: FC<TaskFormProps> = ({
   onCreateReminder,
   taskId,
   isViewModeInProgress,
+  task,
 }) => {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(
+    task?.triggerDate ?? new Date()
+  );
   const [isDateSelected, setDateSelected] = useState(false);
 
   const handleDateSelection = useCallback((date: Date) => {
@@ -43,71 +52,82 @@ const TaskForm: FC<TaskFormProps> = ({
 
   return (
     <>
-      <Pressable
-        style={[
-          styles.button,
-          styles.actionButton,
-          isViewModeInProgress ? styles.doneButton : styles.deleteButton,
-        ]}
-        onPress={onRemoveTask}
-      >
-        <Text style={styles.actionText}>
-          {removeButtonDescription(isViewModeInProgress)}
-        </Text>
-      </Pressable>
+      <DateDisplay date={selectedDate} />
 
-      {!isViewModeInProgress && (
+      <View style={styles.controlsContainer}>
         <Pressable
-          style={[styles.button, styles.actionButton]}
-          onPress={onMoveTaskBack}
+          style={[
+            styles.button,
+            styles.actionButton,
+            isViewModeInProgress ? styles.doneButton : styles.deleteButton,
+          ]}
+          onPress={onRemoveTask}
         >
           <Text style={styles.actionText}>
-            Unfinished task
-            <MaterialCommunityIcons
-              name="progress-check"
-              size={24}
-              color="black"
-            />
+            {removeButtonDescription(isViewModeInProgress)}
           </Text>
         </Pressable>
-      )}
 
-      {isViewModeInProgress && (
-        <TouchableOpacity disabled={!isDateSelected}>
+        {isViewModeInProgress && isDateSelected && (
+          <TouchableOpacity disabled={!isDateSelected}>
+            <Pressable
+              style={[
+                styles.button,
+                styles.actionButton,
+                !isDateSelected && styles.buttonDisabled,
+              ]}
+              disabled={!isDateSelected}
+              onPress={() => onCreateReminder(selectedDate)}
+            >
+              <Text style={styles.actionText}>
+                Set new date
+                <Entypo name="back-in-time" size={24} color="black" />
+              </Text>
+            </Pressable>
+          </TouchableOpacity>
+        )}
+
+        {!isViewModeInProgress && (
           <Pressable
-            style={[
-              styles.button,
-              styles.actionButton,
-              !isDateSelected && styles.buttonDisabled,
-            ]}
-            disabled={!isDateSelected}
-            onPress={() => onCreateReminder(selectedDate)}
+            style={[styles.button, styles.actionButton]}
+            onPress={onMoveTaskBack}
           >
             <Text style={styles.actionText}>
-              Remind later
-              <Entypo name="back-in-time" size={24} color="black" />
+              Unfinished task
+              <MaterialCommunityIcons
+                name="progress-check"
+                size={24}
+                color="black"
+              />
             </Text>
           </Pressable>
-        </TouchableOpacity>
-      )}
+        )}
 
-      {isViewModeInProgress && <div>Selected date is:</div>}
-      {isViewModeInProgress && <DateDisplay date={selectedDate} />}
-
-      {isViewModeInProgress && (
-        <DatePicker setSelectedDate={handleDateSelection} date={selectedDate} />
-      )}
+        {isViewModeInProgress && (
+          <DatePicker
+            setSelectedDate={handleDateSelection}
+            date={selectedDate}
+          />
+        )}
+      </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  controlsContainer: {
+    display: "flex",
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   buttonDisabled: {
     opacity: 0.3,
   },
   button: {
     borderRadius: 20,
-    padding: 10,
+    padding: 4,
     elevation: 2,
   },
   buttonClose: {

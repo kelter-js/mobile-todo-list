@@ -6,10 +6,13 @@ import {
   Alert,
   View,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 
 type AndroidMode = "date" | "time";
 
@@ -45,14 +48,23 @@ export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
 
   return (
     <SafeAreaView>
-      <View style={styles.container}>
-        <View style={styles.buttonsContainer}>
-          <View style={styles.initiateDateSelectionButton}>
-            <Button onPress={showDatepicker} title="Select date" />
-          </View>
-          <View style={styles.initiateDateSelectionButton}>
-            <Button onPress={showTimepicker} title="Select time" />
-          </View>
+      <View style={styles.buttonsMainContainer}>
+        <View style={[styles.initiateDateSelectionButton, styles.firstButton]}>
+          <TouchableOpacity
+            onPress={showDatepicker}
+            style={styles.buttonContainer}
+          >
+            <Ionicons name="timer" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.initiateDateSelectionButton}>
+          <TouchableOpacity
+            onPress={showDatepicker}
+            style={styles.buttonContainer}
+          >
+            <FontAwesome name="calendar" size={24} color="black" />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -70,22 +82,31 @@ export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    position: "relative",
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "flex-start",
-  },
-  buttonsContainer: {
-    flex: 1,
-    flexDirection: "row",
+  buttonContainer: {
+    display: "flex",
     justifyContent: "center",
-    paddingBottom: 50
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  buttonsMainContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    height: 36,
+    width: 80,
+  },
+  firstButton: {
+    marginRight: 7,
   },
   initiateDateSelectionButton: {
-    flexGrow: 1,
-    marginRight: 5,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     width: "50%",
+    borderRadius: 12,
+    borderColor: "grey",
+    borderWidth: 1,
   },
   currentlySelectedDate: {
     position: "absolute",

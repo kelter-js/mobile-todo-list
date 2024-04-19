@@ -54,18 +54,21 @@ const INITIAL_TASKS = [
     description: "blah-blah",
     title: "first task",
     isRepeatable: false,
+    triggerDate: new Date("Sat Jun 13 2024 00:05:29 GMT+0500"),
   },
   {
     id: uuid.v1(),
     description: "bleh-bleh",
     title: "second task",
     isRepeatable: false,
+    triggerDate: new Date("Sat Sep 13 2024 00:05:29 GMT+0500"),
   },
   {
     id: uuid.v1(),
     description: "bluh-bluh",
     title: "third task",
     isRepeatable: false,
+    triggerDate: new Date("Sat Jan 13 2025 00:05:29 GMT+0500"),
   },
 ];
 
@@ -110,7 +113,7 @@ const App = (): JSX.Element => {
     const [taskToChange] = tasks.filter((task) => task.id === taskData.id);
     const taskIndex = tasks.indexOf(taskToChange);
 
-    console.log(taskIndex)
+    console.log(taskIndex);
 
     setTasks((state) => [
       ...state.slice(0, taskIndex),

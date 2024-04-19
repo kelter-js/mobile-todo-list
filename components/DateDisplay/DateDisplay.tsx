@@ -36,8 +36,10 @@ const DateDisplay: FC<DateDisplayProps> = ({ date }) => {
 
   return (
     <div style={styles.container}>
+      <div style={styles.titleContainer}>Selected date is:</div>
+
       <ImageBackground
-        resizeMode="cover"
+        resizeMode="stretch"
         style={styles.backgroundImage}
         source={getSeasonImage(season)}
       />
@@ -70,7 +72,13 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "space-between",
     flexDirection: "row",
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
+    width: "100%",
+  },
+  titleContainer: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "row",
     width: "100%",
   },
   itemContainer: {
@@ -78,7 +86,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   backgroundImage: {
-    width: '100%',
+    width: "100%",
     height: 120,
   },
 });
