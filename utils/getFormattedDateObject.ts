@@ -20,8 +20,8 @@ const getFormattedDateObject = (date: Date) => ({
   year: date.getFullYear(),
   month: getMonthName(date),
   monthDate: date.getDate(),
-  hour: date.getHours(),
-  minutes: date.getMinutes(),
+  hour: (date.getHours() < 10 ? "0" : "") + date.getHours(),
+  minutes: (date.getMinutes() < 10 ? "0" : "") + date.getMinutes(),
   season: getSeason(date.getMonth()),
 });
 
