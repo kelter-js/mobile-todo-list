@@ -26,6 +26,7 @@ export interface ITask {
   title: string;
   isRepeatable: boolean;
   id?: string | Uint8Array;
+  triggerDate?: Date;
 }
 
 export interface CustomCheckboxProps {
