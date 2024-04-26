@@ -25,6 +25,7 @@ import ModalWindow from "./components/Modal";
 import TaskForm from "./components/TaskForm";
 import TaskFilterButtons from "./components/TaskFilterButtons";
 import NewTaskModalForm from "./components/NewTaskModalForm";
+import SplashScreen from "./components/SplashScreen";
 
 const backgroundPaths = [
   require("./assets/background/nature-1.jpg"),
@@ -47,6 +48,7 @@ const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
 //todo: the main idea is - when user reopen application, show him loader, while loader spinning
 // we just map through tasks array, check task timer - if timer is ended - task should be removed, if its not repeatable
 //if its repeatable - task should be marked as done
+//need to display splanscreen component while maintaining tasks in background - get from store, map through them, other operations
 
 const INITIAL_TASKS = [
   {
