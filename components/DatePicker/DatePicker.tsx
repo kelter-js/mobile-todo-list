@@ -1,8 +1,6 @@
 import { useState, FC } from "react";
 import {
   SafeAreaView,
-  Button,
-  Text,
   Alert,
   View,
   StyleSheet,
@@ -21,7 +19,6 @@ interface IDatePickerProps {
   setSelectedDate: (date: Date) => void;
 }
 
-//select time and select date buttons should be replaced or adjusted with icons
 export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
   const [mode, setMode] = useState<AndroidMode>("date");
   const [show, setShow] = useState(false);
@@ -51,7 +48,7 @@ export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
       <View style={styles.buttonsMainContainer}>
         <View style={[styles.initiateDateSelectionButton, styles.firstButton]}>
           <TouchableOpacity
-            onPress={showDatepicker}
+            onPress={showTimepicker}
             style={styles.buttonContainer}
           >
             <Ionicons name="timer" size={24} color="black" />
