@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useCallback } from "react";
 import {
   TextInput,
   View,
@@ -11,24 +11,37 @@ import { CheckBox } from "@rneui/base";
 import { Feather } from "@expo/vector-icons";
 
 import { INewTaskFormProps } from "../../models";
+import DatePicker from "../DatePicker";
 
-
-//need to add validation, we can apply changes if user remove title completely
 const NewTaskModalForm: FC<INewTaskFormProps> = ({ onAdd, task = {} }) => {
   const [newTaskText, setNewTaskText] = useState(task?.description ?? "");
   const [newTaskTitle, setNewTaskTitle] = useState(task?.title ?? "");
   const [isRepeatableTask, setRepeatableTask] = useState(
     task?.isRepeatable ?? false
   );
+  const [triggerDate, setTriggerDate] = useState(
+    task?.triggerDate ?? new Date()
+  );
+
+  const isTaskEditMode = Boolean(
+    task?.description && task?.title && task?.triggerDate
+  );
+
+  const handleDateSelection = useCallback((date: Date) => {
+    setTriggerDate(date);
+  }, []);
 
   const handleCreateNewTask = () => {
     Keyboard.dismiss();
+
     onAdd({
       ...task,
       description: newTaskText,
       title: newTaskTitle,
       isRepeatable: isRepeatableTask,
+      triggerDate: isTaskEditMode ? task.triggerDate : triggerDate,
     });
+
     setNewTaskText("");
     setNewTaskTitle("");
     setRepeatableTask(false);
@@ -38,7 +51,7 @@ const NewTaskModalForm: FC<INewTaskFormProps> = ({ onAdd, task = {} }) => {
     setRepeatableTask((state) => !state);
   };
 
-  const isTaskEmpty = !newTaskText;
+  const isTaskEmpty = !Boolean(newTaskTitle && newTaskText);
 
   return (
     <View style={styles.taskContainer}>
@@ -50,13 +63,18 @@ const NewTaskModalForm: FC<INewTaskFormProps> = ({ onAdd, task = {} }) => {
       />
 
       <TextInput
-        style={styles.input}
+        style={[styles.input, styles.titleInput]}
         placeholder="Task title"
         onChangeText={setNewTaskText}
         value={newTaskText}
       />
 
-      <View>
+      <View
+        style={[
+          styles.mainContainer,
+          !isTaskEditMode && styles.datePickerContainer,
+        ]}
+      >
         <CheckBox
           checked={isRepeatableTask}
           onPress={toggleCheckbox}
@@ -65,6 +83,13 @@ const NewTaskModalForm: FC<INewTaskFormProps> = ({ onAdd, task = {} }) => {
           uncheckedIcon={<Feather name="circle" size={24} color="black" />}
           title="Is this task repeatable?"
         />
+
+        {!isTaskEditMode && (
+          <DatePicker
+            date={triggerDate}
+            setSelectedDate={handleDateSelection}
+          />
+        )}
       </View>
 
       <Pressable
@@ -85,6 +110,18 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+  },
+  datePickerContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  mainContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginLeft: -15,
   },
   checkbox: {
     margin: 8,
@@ -124,6 +161,9 @@ const styles = StyleSheet.create({
     borderColor: "#c0c0c0",
     borderWidth: 1,
     height: 51,
+  },
+  titleInput: {
+    marginBottom: 0,
   },
 });
 
