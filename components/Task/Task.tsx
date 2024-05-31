@@ -1,21 +1,18 @@
 import { FC } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { ITaskProps } from "../../models";
 
+//need to display in same space where we render title and description we need to render date
+// if date is today - show time
 const Task: FC<ITaskProps> = ({
   description,
   title,
   isRepeatable,
   id,
   onOpen,
-  onConfigure
+  onConfigure,
 }) => {
   const handleOpening = () => {
     onOpen(String(id));
@@ -24,7 +21,7 @@ const Task: FC<ITaskProps> = ({
   const handleConfigure = () => {
     onConfigure(String(id));
   };
-  
+
   return (
     <TouchableOpacity onPress={handleOpening}>
       <View style={styles.item}>
