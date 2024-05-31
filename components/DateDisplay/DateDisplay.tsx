@@ -1,10 +1,8 @@
-//component should display well formatted date
-//we also need to style component depending on year period
-//background style with icons i think
+import { FC } from "react";
 import { StyleSheet, ImageBackground } from "react-native";
+
 import getFormattedDateObject from "../../utils/getFormattedDateObject";
 import { YEAR_SEASONS } from "../../models";
-import { FC } from "react";
 
 interface DateDisplayProps {
   date: Date;

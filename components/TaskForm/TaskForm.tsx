@@ -5,7 +5,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useState } from "react";
 
 import { TaskFormProps } from "../../models";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -28,10 +28,6 @@ const removeButtonDescription = (isViewModeInProgress: boolean) =>
     </>
   );
 
-//place buttons near bottom of modal
-//rearrange layout of buttons placement
-//we should display selected date in a more understandable way
-//create accent on which date to remind is settled
 const TaskForm: FC<TaskFormProps> = ({
   onRemoveTask,
   onMoveTaskBack,
@@ -77,7 +73,7 @@ const TaskForm: FC<TaskFormProps> = ({
                 !isDateSelected && styles.buttonDisabled,
               ]}
               disabled={!isDateSelected}
-              onPress={() => onCreateReminder(selectedDate)}
+              onPress={() => onCreateReminder(selectedDate, taskId)}
             >
               <Text style={styles.actionText}>
                 Set new date
