@@ -1,14 +1,17 @@
-import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
 import { FC } from "react";
+import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
 
+import { getPercentage } from "../../utils/getPercentage";
 import { ITaskListProps } from "../../models";
 import Task from "../Task/Task";
 
-import { getPercentage } from "../../utils/getPercentage";
-
 const windowHeight = Dimensions.get("window").height;
 
-const TaskList: FC<ITaskListProps> = ({ tasks, onTaskOpen, onTaskConfigure }) => (
+const TaskList: FC<ITaskListProps> = ({
+  tasks,
+  onTaskOpen,
+  onTaskConfigure,
+}) => (
   <View style={styles.listContainer}>
     <ScrollView style={styles.items}>
       {tasks.map(({ id, description, title, isRepeatable }, index) => (
