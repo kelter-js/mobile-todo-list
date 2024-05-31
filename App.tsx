@@ -1,31 +1,36 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import {
   Text,
   View,
   StyleSheet,
   ScrollView,
-  AppState,
   Keyboard,
   ImageBackground,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Notifications from "expo-notifications";
-import uuid from "react-native-uuid";
 
+//other
 import { storeData } from "./utils/storage";
-import { ITask, ViewModes } from "./models";
-import {
-  schedulePushNotification,
-  registerForPushNotificationsAsync,
-} from "./utils/notifications";
-import TaskList from "./components/TaskList";
-import NewTaskContainer from "./components/NewTaskContainer";
+import { ITask } from "./models";
+import { schedulePushNotification } from "./utils/notifications";
 import getRandom from "./utils/getRandom";
-import ModalWindow from "./components/Modal";
-import TaskForm from "./components/TaskForm";
+
+//components
 import TaskFilterButtons from "./components/TaskFilterButtons";
 import NewTaskModalForm from "./components/NewTaskModalForm";
+import NewTaskContainer from "./components/NewTaskContainer";
 import SplashScreen from "./components/SplashScreen";
+import TaskList from "./components/TaskList";
+import ModalWindow from "./components/Modal";
+import TaskForm from "./components/TaskForm";
+
+//hooks
+import useNotificationRegister from "./hooks/useNotificationRegister";
+import useBackgroundImage from "./hooks/useBackgroundImage";
+import useManageTask from "./hooks/useManageTask";
+import useTasksList from "./hooks/useTasksList";
+import useAppState from "./hooks/useAppState";
+import useViewMode from "./hooks/useViewMode";
 
 const backgroundPaths = [
   require("./assets/background/nature-1.jpg"),
@@ -46,218 +51,130 @@ const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
 //todo: split states into one global and use reducer
 //todo: we should store tasks at some kind of local storage
 //todo: the main idea is - when user reopen application, show him loader, while loader spinning
-// we just map through tasks array, check task timer - if timer is ended - task should be removed, if its not repeatable
+// we just map through tasks id array, check task timer - if timer is ended - task should be removed, if its not repeatable
 //if its repeatable - task should be marked as done
 //need to display splanscreen component while maintaining tasks in background - get from store, map through them, other operations
 
-const INITIAL_TASKS = [
-  {
-    id: uuid.v1(),
-    description: "blah-blah",
-    title: "first task",
-    isRepeatable: false,
-    triggerDate: new Date("Sat Jun 13 2024 00:05:29 GMT+0500"),
-  },
-  {
-    id: uuid.v1(),
-    description: "bleh-bleh",
-    title: "second task",
-    isRepeatable: false,
-    triggerDate: new Date("Sat Sep 13 2024 00:05:29 GMT+0500"),
-  },
-  {
-    id: uuid.v1(),
-    description: "bluh-bluh",
-    title: "third task",
-    isRepeatable: false,
-    triggerDate: new Date("Sat Jan 13 2025 00:05:29 GMT+0500"),
-  },
-];
+// create hooks folder, create useInitiate hook, create ENUM with all kind of keys that we use
+// we need state to indicate if application should reinitiate or not, when app in background, we should set state into true or when its first launch
+// then we should reinitiate app, get all tasks from store, delete those thats not repeataple and already fired
+// those which repeatable we need to in doneTasks, others in all tasks list, while we initiate we show splashcreen component
+//after initiation we need to update inner local storage with new set of tasks, because we might delete some of them
+//if user change title, change trigger or repeatable state, or description - we should get from localstore array, map thorugh it,
+// find needed task, update object, set it back
+//we need to create reducers, too much logic layer app file containing
 
 const App = (): JSX.Element => {
-  const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] =
-    useState<Notifications.Notification | null>(null);
-  const [openedTask, setOpenedTask] = useState("");
-  const [isModalWindowOpened, setModalOpened] = useState(false);
-  const [currentImagePath, setCurrentImagePath] = useState();
-  const [viewMode, setViewMode] = useState<keyof typeof ViewModes>(
-    ViewModes.IN_PROGRESS
-  );
-  const [doneTasks, setDoneTasks] = useState<ITask[]>([]);
-  const [isTaskEditMode, setTaskEditMode] = useState(false);
+  //initiate notification service
+  const { expoPushToken, notification } = useNotificationRegister();
+
+  const { currentImagePath } = useBackgroundImage(backgroundPaths);
+
+  const { isAppVisible } = useAppState();
+
+  const { viewMode, setViewMode, isViewModeInProgress } = useViewMode();
+  const {
+    isModalWindowOpened,
+    isTaskEditMode,
+    activeTask,
+    setModalOpened,
+    setTaskEditMode,
+    setActiveTask,
+  } = useManageTask();
+
+  const {
+    isLoading,
+    createNewTask,
+    updateTask,
+    removeTask,
+    markTaskAsUndone,
+    tasksToView,
+    activeTaskData,
+  } = useTasksList(isViewModeInProgress, activeTask);
+
+  const handleCloseModal = useCallback(() => {
+    setModalOpened(false);
+    setActiveTask("");
+  }, []);
 
   const handleResetOpenedTask = useCallback(() => {
-    setModalOpened(false);
+    handleCloseModal();
     setTaskEditMode(false);
-    setOpenedTask("");
   }, []);
 
   const handleTaskOpen = useCallback((id: string) => {
-    setOpenedTask(id);
+    setActiveTask(id);
   }, []);
 
   const handleTaskConfigure = useCallback((id: string) => {
     setTaskEditMode(true);
-    setOpenedTask(id);
+    setActiveTask(id);
   }, []);
-
-  const [tasks, setTasks] = useState<ITask[]>(INITIAL_TASKS);
 
   const handleCreateNewTask = (taskData: Omit<ITask, "id">) => {
     Keyboard.dismiss();
-    setTasks((state) => [...state, { id: uuid.v1(), ...taskData }]);
+    createNewTask(taskData);
   };
 
   const handleChangeTask = (taskData: ITask) => {
     Keyboard.dismiss();
 
-    const [taskToChange] = tasks.filter((task) => task.id === taskData.id);
-    const taskIndex = tasks.indexOf(taskToChange);
-
-    console.log(taskIndex);
-
-    setTasks((state) => [
-      ...state.slice(0, taskIndex),
-      { ...taskData },
-      ...state.slice(taskIndex + 1),
-    ]);
+    updateTask(taskData);
 
     handleResetOpenedTask();
   };
 
-  const notificationListener = useRef<any>();
-  const responseListener = useRef<any>();
-
   useEffect(() => {
-    if (Boolean(openedTask.trim())) {
+    if (Boolean(activeTask.trim())) {
       setModalOpened(true);
     }
-  }, [openedTask]);
+  }, [activeTask]);
 
-  const createNewNotification = async (remindDate: Date) => {
-    setModalOpened(false);
-
+  const createNewNotification = async (
+    remindDate: Date,
+    taskId: string | Uint8Array
+  ) => {
     const { date, notificationId } = await schedulePushNotification(
-      openedTask,
+      activeTask,
       remindDate
     );
 
-    setOpenedTask("");
+    handleCloseModal();
 
     await storeData("taskTime", date.toString());
-    await storeData("taskId", notificationId);
+    await storeData("notificationId", notificationId);
+    await storeData("taskId", taskId);
   };
 
-  const handleAppChange = useCallback(async () => {
-    await AsyncStorage.getItem("taskTime").then(async (value) => {
-      if (value !== null) {
-        const currentDate = new Date();
-        const taskDate = new Date(value);
+  useEffect(() => {
+    if (isAppVisible) {
+      AsyncStorage.getItem("taskTime").then(async (value) => {
+        if (value !== null) {
+          const currentDate = new Date();
+          const taskDate = new Date(value);
 
-        if (!(taskDate > currentDate)) {
-          await AsyncStorage.removeItem("taskTime");
-          await AsyncStorage.removeItem("taskId");
+          if (!(taskDate > currentDate)) {
+            await AsyncStorage.removeItem("taskTime");
+            await AsyncStorage.removeItem("notificationId");
+          }
+        } else {
+          await AsyncStorage.removeItem("notificationId");
         }
-      } else {
-        await AsyncStorage.removeItem("taskId");
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener("change", handleAppChange);
-
-    return () => subscription.remove();
-  }, []);
-
-  useEffect(() => {
-    handleAppChange();
-  });
-
-  useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token ?? "")
-    );
-
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener(async (notification) => {
-        setNotification(notification);
       });
-
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
-
-    return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
+    }
+  }, [isAppVisible]);
 
   const handleRemoveTask = useCallback(() => {
-    if (viewMode === ViewModes.IN_PROGRESS) {
-      const taskToRemove = tasks.find((item) => item.id === openedTask);
+    removeTask(viewMode, activeTask);
 
-      if (taskToRemove) {
-        const taskIndex = tasks.indexOf(taskToRemove);
-
-        setDoneTasks((state) => [...state, taskToRemove]);
-
-        setTasks([...tasks.slice(0, taskIndex), ...tasks.slice(taskIndex + 1)]);
-      }
-    }
-
-    if (viewMode === ViewModes.FINISHED) {
-      const taskToRemove = doneTasks.find((item) => item.id === openedTask);
-
-      if (taskToRemove) {
-        const taskIndex = doneTasks.indexOf(taskToRemove);
-
-        setDoneTasks((state) => [
-          ...state.slice(0, taskIndex),
-          ...state.slice(taskIndex + 1),
-        ]);
-      }
-    }
-
-    setOpenedTask("");
-    setModalOpened(false);
-  }, [tasks, openedTask, doneTasks]);
+    handleCloseModal();
+  }, [viewMode, activeTask]);
 
   const handleMoveTaskBack = useCallback(() => {
-    const taskToMoveBack = doneTasks.find((item) => item.id === openedTask);
+    markTaskAsUndone(activeTask);
 
-    if (taskToMoveBack) {
-      const taskIndex = doneTasks.indexOf(taskToMoveBack);
-
-      setTasks((state) => [...state, taskToMoveBack]);
-      setDoneTasks((state) => [
-        ...state.slice(0, taskIndex),
-        ...state.slice(taskIndex + 1),
-      ]);
-    }
-
-    setOpenedTask("");
-    setModalOpened(false);
-  }, [openedTask, doneTasks]);
-
-  useEffect(() => {
-    const timerId = setInterval(() => {
-      const newImageSrc =
-        backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
-      setCurrentImagePath(newImageSrc);
-    }, 6500);
-
-    return () => clearInterval(timerId);
-  }, []);
-
-  const isViewModeInProgress = viewMode === ViewModes.IN_PROGRESS;
-
-  const [openedTaskData] = tasks.filter((item) => item.id === openedTask);
+    handleCloseModal();
+  }, [activeTask]);
 
   return (
     <ScrollView
@@ -273,13 +190,14 @@ const App = (): JSX.Element => {
       <View style={styles.contentContainer}>
         <View style={styles.tasksContainer}>
           <Text style={styles.sectionTitle}>Today`s tasks</Text>
+
           <TaskFilterButtons
             setViewMode={setViewMode}
             isViewModeInProgress={isViewModeInProgress}
           />
 
           <TaskList
-            tasks={isViewModeInProgress ? tasks : doneTasks}
+            tasks={tasksToView}
             onTaskOpen={handleTaskOpen}
             onTaskConfigure={handleTaskConfigure}
           />
@@ -289,12 +207,12 @@ const App = (): JSX.Element => {
             isWindowOpened={isModalWindowOpened && !isTaskEditMode}
           >
             <TaskForm
-              taskId={String(openedTask)}
+              taskId={String(activeTask)}
               onRemoveTask={handleRemoveTask}
               onMoveTaskBack={handleMoveTaskBack}
               onCreateReminder={createNewNotification}
               isViewModeInProgress={isViewModeInProgress}
-              task={openedTaskData}
+              task={activeTaskData}
             />
           </ModalWindow>
 
@@ -302,7 +220,7 @@ const App = (): JSX.Element => {
             onCloseModal={handleResetOpenedTask}
             isWindowOpened={isModalWindowOpened && isTaskEditMode}
           >
-            <NewTaskModalForm onAdd={handleChangeTask} task={openedTaskData} />
+            <NewTaskModalForm onAdd={handleChangeTask} task={activeTaskData} />
           </ModalWindow>
 
           <NewTaskContainer onAdd={handleCreateNewTask} />
