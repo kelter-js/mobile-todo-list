@@ -10,9 +10,9 @@ export interface TaskFormProps {
   isViewModeInProgress: boolean;
   onRemoveTask: VoidFunction;
   onMoveTaskBack: VoidFunction;
-  taskId?: string;
+  taskId: string;
   taskText?: string;
-  onCreateReminder: (date: Date) => void;
+  onCreateReminder: (date: Date, taskId: string | Uint8Array) => void;
   task: ITask;
 }
 
