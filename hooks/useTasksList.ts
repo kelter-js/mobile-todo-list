@@ -1,43 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import uuid from "react-native-uuid";
 
 import { ITask, ViewModes } from "../models";
-
-//here we should place logic to fetch tasks from BE if user logged in, or get them from local state
-
-//test array
-const INITIAL_TASKS = [
-  {
-    id: uuid.v1(),
-    description: "blah-blah",
-    title: "first task",
-    isRepeatable: false,
-    triggerDate: new Date("Sat Jun 13 2024 00:05:29 GMT+0500"),
-  },
-  {
-    id: uuid.v1(),
-    description: "bleh-bleh",
-    title: "second task",
-    isRepeatable: false,
-    triggerDate: new Date("Sat Sep 13 2024 00:05:29 GMT+0500"),
-  },
-  {
-    id: uuid.v1(),
-    description: "bluh-bluh",
-    title: "third task",
-    isRepeatable: false,
-    triggerDate: new Date("Sat Jan 13 2025 00:05:29 GMT+0500"),
-  },
-];
+import useAppState from "./useAppState";
+import useInitiateTasks from "./useInitiateTasks";
 
 const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [tasksList, setTasksList] = useState<ITask[]>(INITIAL_TASKS);
+  const [tasksList, setTasksList] = useState<ITask[]>([]);
   const [doneTasks, setDoneTasks] = useState<ITask[]>([]);
 
   const createNewTask = (newTaskData: Omit<ITask, "id">) => {
     setTasksList((state) => [...state, { id: uuid.v1(), ...newTaskData }]);
   };
+
+  const { isAppVisible } = useAppState();
+  const { isLoadingTasks, updateTasks, getTasks } = useInitiateTasks();
+
+  useEffect(() => {
+    if (isAppVisible) {
+      //here we need to set two separate states - tasks and doneTasks
+      getTasks().then(({ parsedTasksList, repeatableTasksList }) => {
+        setTasksList(parsedTasksList);
+        setDoneTasks(repeatableTasksList);
+      });
+    }
+  }, [isAppVisible]);
 
   const updateTask = (taskData: ITask) => {
     const [taskToChange] = tasksList.filter((task) => task.id === taskData.id);
@@ -101,7 +88,7 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
 
   return {
     doneTasks,
-    isLoading,
+    isLoadingTasks,
     tasksList,
     createNewTask,
     updateTask,
