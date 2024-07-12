@@ -70,8 +70,6 @@ const App = (): JSX.Element => {
 
   const { currentImagePath } = useBackgroundImage(backgroundPaths);
 
-  const { isAppVisible } = useAppState();
-
   const { viewMode, setViewMode, isViewModeInProgress } = useViewMode();
   const {
     isModalWindowOpened,
@@ -83,7 +81,7 @@ const App = (): JSX.Element => {
   } = useManageTask();
 
   const {
-    isLoading,
+    isLoadingTasks,
     createNewTask,
     updateTask,
     removeTask,
@@ -146,23 +144,23 @@ const App = (): JSX.Element => {
     await storeData("taskId", taskId);
   };
 
-  useEffect(() => {
-    if (isAppVisible) {
-      AsyncStorage.getItem("taskTime").then(async (value) => {
-        if (value !== null) {
-          const currentDate = new Date();
-          const taskDate = new Date(value);
+  // useEffect(() => {
+  //   if (isAppVisible) {
+  //     AsyncStorage.getItem("taskTime").then(async (value) => {
+  //       if (value !== null) {
+  //         const currentDate = new Date();
+  //         const taskDate = new Date(value);
 
-          if (!(taskDate > currentDate)) {
-            await AsyncStorage.removeItem("taskTime");
-            await AsyncStorage.removeItem("notificationId");
-          }
-        } else {
-          await AsyncStorage.removeItem("notificationId");
-        }
-      });
-    }
-  }, [isAppVisible]);
+  //         if (!(taskDate > currentDate)) {
+  //           await AsyncStorage.removeItem("taskTime");
+  //           await AsyncStorage.removeItem("notificationId");
+  //         }
+  //       } else {
+  //         await AsyncStorage.removeItem("notificationId");
+  //       }
+  //     });
+  //   }
+  // }, [isAppVisible]);
 
   const handleRemoveTask = useCallback(() => {
     removeTask(viewMode, activeTask);
@@ -175,6 +173,10 @@ const App = (): JSX.Element => {
 
     handleCloseModal();
   }, [activeTask]);
+
+  if (isLoadingTasks) {
+    return <SplashScreen />;
+  }
 
   return (
     <ScrollView

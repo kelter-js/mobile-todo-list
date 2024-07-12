@@ -54,13 +54,13 @@ export const registerForPushNotificationsAsync = async () => {
     }
 
     if (finalStatus !== "granted") {
-      Alert.alert('Failed to get push token for push notification!');
+      Alert.alert("Failed to get push token for push notification!");
       return;
     }
 
     token = (await Notifications.getExpoPushTokenAsync()).data;
   } else {
-    Alert.alert('Must use physical device for Push Notifications');
+    Alert.alert("Must use physical device for Push Notifications");
   }
   Alert.alert("registered token:", token);
 
