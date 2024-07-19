@@ -14,7 +14,13 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
   };
 
   const { isAppVisible } = useAppState();
-  const { isLoadingTasks, updateTasks, getTasks } = useInitiateTasks();
+  const { isLoadingTasks, updateStorageTasks, getTasks } = useInitiateTasks();
+
+  useEffect(() => {
+    setTimeout(() => {
+      getTasks().then((res) => console.log("fetched from state tasks:", res));
+    }, 1000);
+  });
 
   useEffect(() => {
     if (isAppVisible) {
@@ -30,13 +36,15 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
     const [taskToChange] = tasksList.filter((task) => task.id === taskData.id);
     const taskIndex = tasksList.indexOf(taskToChange);
 
-    console.log(taskIndex);
-
-    setTasksList((state) => [
-      ...state.slice(0, taskIndex),
+    const updatedList = [
+      ...tasksList.slice(0, taskIndex),
       { ...taskData },
-      ...state.slice(taskIndex + 1),
-    ]);
+      ...tasksList.slice(taskIndex + 1),
+    ];
+
+    setTasksList(updatedList);
+
+    updateStorageTasks([...updatedList, ...doneTasks]);
   };
 
   const removeTask = (viewMode: keyof typeof ViewModes, openedTask: string) => {
@@ -46,12 +54,17 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
       if (taskToRemove) {
         const taskIndex = tasksList.indexOf(taskToRemove);
 
-        setDoneTasks((state) => [...state, taskToRemove]);
+        const updatedDoneTasks = [...doneTasks, taskToRemove];
+        setDoneTasks(updatedDoneTasks);
 
-        setTasksList([
+        const updatedTasksList = [
           ...tasksList.slice(0, taskIndex),
           ...tasksList.slice(taskIndex + 1),
-        ]);
+        ];
+
+        setTasksList(updatedTasksList);
+
+        updateStorageTasks([...updatedTasksList, ...updatedDoneTasks]);
       }
     }
 
@@ -61,10 +74,14 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
       if (taskToRemove) {
         const taskIndex = doneTasks.indexOf(taskToRemove);
 
-        setDoneTasks((state) => [
-          ...state.slice(0, taskIndex),
-          ...state.slice(taskIndex + 1),
-        ]);
+        const updatedDoneTasks = [
+          ...doneTasks.slice(0, taskIndex),
+          ...doneTasks.slice(taskIndex + 1),
+        ];
+
+        setDoneTasks(updatedDoneTasks);
+
+        updateStorageTasks([...tasksList, ...updatedDoneTasks]);
       }
     }
   };
@@ -75,12 +92,16 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
     if (taskToMoveBack) {
       const taskIndex = doneTasks.indexOf(taskToMoveBack);
 
-      setTasksList((state) => [...state, taskToMoveBack]);
+      const updatedDoneTasks = [...doneTasks, taskToMoveBack];
+      setTasksList(updatedDoneTasks);
 
-      setDoneTasks((state) => [
-        ...state.slice(0, taskIndex),
-        ...state.slice(taskIndex + 1),
-      ]);
+      const updatedTasksList = [
+        ...tasksList.slice(0, taskIndex),
+        ...tasksList.slice(taskIndex + 1),
+      ];
+      setDoneTasks(updatedTasksList);
+
+      updateStorageTasks([...updatedTasksList, ...updatedDoneTasks]);
     }
   };
 
