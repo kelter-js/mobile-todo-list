@@ -53,7 +53,9 @@ const useInitiateTasks = () => {
       validateTasksList(tasks);
 
     if (count !== tasks.length) {
-      //updating storage with parsed lists
+      await updateTasks([...repeatableTasksList, ...parsedTasksList]);
+      //set action form ENUM of actions, which should be created
+      //setAction()
     }
 
     return { repeatableTasksList, parsedTasksList };
@@ -61,7 +63,7 @@ const useInitiateTasks = () => {
 
   return {
     isLoadingTasks,
-    updateTasks,
+    updateStorageTasks: updateTasks,
     getTasks,
   };
 };
