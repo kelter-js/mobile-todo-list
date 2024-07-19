@@ -38,12 +38,14 @@ export interface ITaskProps extends ITask {
   onOpen: (id: string) => void;
   onConfigure: (id: string) => void;
   id: string | Uint8Array;
+  isNotConfigurable: boolean;
 }
 
 export interface ITaskListProps {
   tasks: Array<ITask>;
   onTaskOpen: (id: string) => void;
   onTaskConfigure: (id: string) => void;
+  isViewModeInProgress: boolean;
 }
 
 export enum ViewModes {
