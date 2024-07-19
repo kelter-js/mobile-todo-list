@@ -19,8 +19,8 @@ const NewTaskModalForm: FC<INewTaskFormProps> = ({ onAdd, task = {} }) => {
   const [isRepeatableTask, setRepeatableTask] = useState(
     task?.isRepeatable ?? false
   );
-  const [triggerDate, setTriggerDate] = useState(
-    task?.triggerDate ?? new Date()
+  const [triggerDate, setTriggerDate] = useState<Date | null>(
+    task?.triggerDate ?? null
   );
 
   const isTaskEditMode = Boolean(
@@ -34,24 +34,26 @@ const NewTaskModalForm: FC<INewTaskFormProps> = ({ onAdd, task = {} }) => {
   const handleCreateNewTask = () => {
     Keyboard.dismiss();
 
-    onAdd({
-      ...task,
-      description: newTaskText,
-      title: newTaskTitle,
-      isRepeatable: isRepeatableTask,
-      triggerDate: isTaskEditMode ? task.triggerDate : triggerDate,
-    });
+    if (triggerDate) {
+      onAdd({
+        ...task,
+        description: newTaskText,
+        title: newTaskTitle,
+        isRepeatable: isRepeatableTask,
+        triggerDate: isTaskEditMode ? task.triggerDate : triggerDate,
+      });
 
-    setNewTaskText("");
-    setNewTaskTitle("");
-    setRepeatableTask(false);
+      setNewTaskText("");
+      setNewTaskTitle("");
+      setRepeatableTask(false);
+    }
   };
 
   const toggleCheckbox = () => {
     setRepeatableTask((state) => !state);
   };
 
-  const isTaskEmpty = !Boolean(newTaskTitle && newTaskText);
+  const isTaskEmpty = !Boolean(newTaskTitle && newTaskText && triggerDate);
 
   return (
     <View style={styles.taskContainer}>
@@ -86,7 +88,7 @@ const NewTaskModalForm: FC<INewTaskFormProps> = ({ onAdd, task = {} }) => {
 
         {!isTaskEditMode && (
           <DatePicker
-            date={triggerDate}
+            date={triggerDate ?? new Date()}
             setSelectedDate={handleDateSelection}
           />
         )}
