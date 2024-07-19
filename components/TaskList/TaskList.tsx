@@ -11,6 +11,7 @@ const TaskList: FC<ITaskListProps> = ({
   tasks,
   onTaskOpen,
   onTaskConfigure,
+  isViewModeInProgress,
 }) => (
   <View style={styles.listContainer}>
     <ScrollView style={styles.items}>
@@ -23,6 +24,7 @@ const TaskList: FC<ITaskListProps> = ({
           key={id?.toString() ?? index}
           onOpen={onTaskOpen}
           onConfigure={onTaskConfigure}
+          isNotConfigurable={isViewModeInProgress}
         />
       ))}
     </ScrollView>
