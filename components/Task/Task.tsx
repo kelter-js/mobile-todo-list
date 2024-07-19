@@ -13,6 +13,7 @@ const Task: FC<ITaskProps> = ({
   id,
   onOpen,
   onConfigure,
+  isNotConfigurable,
 }) => {
   const handleOpening = () => {
     onOpen(String(id));
@@ -35,21 +36,23 @@ const Task: FC<ITaskProps> = ({
         </View>
 
         <View style={styles.controlsContainer}>
-          <View
-            onStartShouldSetResponder={() => true}
-            onTouchEnd={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            <TouchableOpacity onPress={handleConfigure}>
-              <MaterialCommunityIcons
-                name="calendar-edit"
-                size={24}
-                color="black"
-                style={styles.calendarIcon}
-              />
-            </TouchableOpacity>
-          </View>
+          {isNotConfigurable && (
+            <View
+              onStartShouldSetResponder={() => true}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              <TouchableOpacity onPress={handleConfigure}>
+                <MaterialCommunityIcons
+                  name="calendar-edit"
+                  size={24}
+                  color="black"
+                  style={styles.calendarIcon}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
 
           {isRepeatable ? (
             <MaterialCommunityIcons name="repeat" size={24} color="black" />
