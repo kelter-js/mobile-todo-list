@@ -1,7 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import uuid from "react-native-uuid";
+
 import { ITask } from "../models";
-import fakePromiseTimer from "./fakePromiseTimer";
+import dateReviver from "./dateReviver";
 
 const TASKS_LIST_KEY = "tasksList";
 
@@ -33,10 +34,9 @@ const storageManager = {
   async getTasksList() {
     try {
       const tasksList = await AsyncStorage.getItem(TASKS_LIST_KEY);
-      await fakePromiseTimer(1000);
 
       if (tasksList) {
-        return JSON.parse(tasksList);
+        return JSON.parse(tasksList, dateReviver);
       }
 
       return INITIAL_TASKS;
