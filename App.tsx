@@ -64,6 +64,18 @@ const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
 // find needed task, update object, set it back
 //we need to create reducers, too much logic layer app file containing
 
+//we need to check that user selected new date, before we put task from done to task in progress
+//we need to add button to clear ALL done tasks
+
+//we also need to add a flag to task interface, something like - done
+//and if task is done, but isnt repeatable - delete it
+//this flag will help in case, if user reload app, and he previously manually set that task is done - we already after loading will load it
+//into separated done tasks list
+//so handler of button Done should change flag done in task to true
+
+//also, since its two separate UI parts, we can check and change button description
+//if task isnt repeatable - done button should delete task, if task is repeatable - then we can mark it as done
+
 const App = (): JSX.Element => {
   //initiate notification service
   const { expoPushToken, notification } = useNotificationRegister();
@@ -202,6 +214,7 @@ const App = (): JSX.Element => {
             tasks={tasksToView}
             onTaskOpen={handleTaskOpen}
             onTaskConfigure={handleTaskConfigure}
+            isViewModeInProgress={isViewModeInProgress}
           />
 
           <ModalWindow
