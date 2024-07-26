@@ -1,11 +1,16 @@
 import { ActivityIndicator, StyleSheet, View, Text } from "react-native";
+import { useLoadContext } from "../../context/LoadContext";
 
-const SplashScreen = () => (
-  <View style={styles.container}>
-    <ActivityIndicator size={120} color="#e8b246" />
-    <Text style={styles.text}>Preparing tasks...</Text>
-  </View>
-);
+const SplashScreen = () => {
+  const { action } = useLoadContext();
+
+  return (
+    <View style={styles.container}>
+      <ActivityIndicator size={120} color="#e8b246" />
+      <Text style={styles.text}>{action} tasks...</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
