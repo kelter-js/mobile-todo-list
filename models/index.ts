@@ -67,3 +67,8 @@ export enum YEAR_SEASONS {
   SUMMER = "SUMMER",
   AUTUMN = "AUTUMN",
 }
+
+export enum ACTIONS {
+  UPDATING = "Updating",
+  LOADING = "Loading",
+}

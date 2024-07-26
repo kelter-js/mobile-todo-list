@@ -28,6 +28,13 @@ const INITIAL_TASKS = [
     isRepeatable: false,
     triggerDate: new Date("Sat Jan 13 2025 00:05:29 GMT+0500"),
   },
+  {
+    id: uuid.v1(),
+    description: "date-testing",
+    title: "date testing task description",
+    isRepeatable: true,
+    triggerDate: new Date("Sat Jan 13 2022 00:05:29 GMT+0500"),
+  },
 ];
 
 const storageManager = {
