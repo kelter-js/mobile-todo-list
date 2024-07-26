@@ -1,4 +1,11 @@
-import { createContext, ReactNode, FC, useState, useContext } from "react";
+import {
+  createContext,
+  ReactNode,
+  FC,
+  useState,
+  useContext,
+  useMemo,
+} from "react";
 import { ACTIONS } from "../models";
 
 interface LoadContextProps {
@@ -15,8 +22,13 @@ interface LoadContextProviderProps {
 const LoadContextProvider: FC<LoadContextProviderProps> = ({ children }) => {
   const [action, setAction] = useState<ACTIONS>(ACTIONS.LOADING);
 
+  const memoizedValue = useMemo(
+    () => ({ action, setAction }),
+    [action, setAction]
+  );
+
   return (
-    <LoadContext.Provider value={{ action, setAction }}>
+    <LoadContext.Provider value={memoizedValue}>
       {children}
     </LoadContext.Provider>
   );
