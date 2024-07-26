@@ -1,9 +1,11 @@
 import { Alert } from "react-native";
 import { useState } from "react";
 
-import { ITask } from "../models";
+import { ACTIONS, ITask } from "../models";
 import storageManager from "../utils/storageManager";
 import validateTasksList from "../utils/validateTasksList";
+import { useLoadContext } from "../context/LoadContext";
+import fakePromiseTimer from "../utils/fakePromiseTimer";
 
 // heres template for future logic
 
@@ -24,14 +26,15 @@ import validateTasksList from "../utils/validateTasksList";
 //this hook should be with context, all app should be wrapped in this context
 const useInitiateTasks = () => {
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
+  const { setAction } = useLoadContext();
   //we should set state, which determines text - Loading or Updating for splashscreen component
   //if we update - this state should receive text 'Updating'
   //if we load tasks list - this state should receive text 'Loading'
   //create enum or type for state typization
-  const [action, setAction] = useState();
 
   const updateTasks = async (updatedTasks: ITask[]) => {
     setIsLoadingTasks(true);
+    setAction(ACTIONS.UPDATING);
 
     storageManager
       .updateTasksList(updatedTasks)
@@ -40,6 +43,7 @@ const useInitiateTasks = () => {
   };
 
   const getTasks = async () => {
+    setAction(ACTIONS.LOADING);
     setIsLoadingTasks(true);
     const tasks = await storageManager.getTasksList();
     setIsLoadingTasks(false);
@@ -53,6 +57,7 @@ const useInitiateTasks = () => {
       validateTasksList(tasks);
 
     if (count !== tasks.length) {
+      setAction(ACTIONS.UPDATING);
       await updateTasks([...repeatableTasksList, ...parsedTasksList]);
       //set action form ENUM of actions, which should be created
       //setAction()
