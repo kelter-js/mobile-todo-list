@@ -10,39 +10,39 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //other
-import { storeData } from "./utils/storage";
-import { ITask } from "./models";
-import { schedulePushNotification } from "./utils/notifications";
-import getRandom from "./utils/getRandom";
+import { storeData } from "../../utils/storage";
+import { ITask } from "../../models";
+import { schedulePushNotification } from "../../utils/notifications";
+import getRandom from "../../utils/getRandom";
 
 //components
-import TaskFilterButtons from "./components/TaskFilterButtons";
-import NewTaskModalForm from "./components/NewTaskModalForm";
-import NewTaskContainer from "./components/NewTaskContainer";
-import SplashScreen from "./components/SplashScreen";
-import TaskList from "./components/TaskList";
-import ModalWindow from "./components/Modal";
-import TaskForm from "./components/TaskForm";
+import TaskFilterButtons from "../TaskFilterButtons";
+import NewTaskModalForm from "../NewTaskModalForm";
+import NewTaskContainer from "../NewTaskContainer";
+import SplashScreen from "../SplashScreen";
+import TaskList from "../TaskList";
+import ModalWindow from "../Modal";
+import TaskForm from "../TaskForm";
 
 //hooks
-import useNotificationRegister from "./hooks/useNotificationRegister";
-import useBackgroundImage from "./hooks/useBackgroundImage";
-import useManageTask from "./hooks/useManageTask";
-import useTasksList from "./hooks/useTasksList";
-import useAppState from "./hooks/useAppState";
-import useViewMode from "./hooks/useViewMode";
+import useNotificationRegister from "../../hooks/useNotificationRegister";
+import useBackgroundImage from "../../hooks/useBackgroundImage";
+import useManageTask from "../../hooks/useManageTask";
+import useTasksList from "../../hooks/useTasksList";
+import useAppState from "../../hooks/useAppState";
+import useViewMode from "../../hooks/useViewMode";
 
 const backgroundPaths = [
-  require("./assets/background/nature-1.jpg"),
-  require("./assets/background/nature-2.jpg"),
-  require("./assets/background/nature-3.jpg"),
-  require("./assets/background/nature-4.jpg"),
-  require("./assets/background/nature-5.jpg"),
-  require("./assets/background/nature-6.jpg"),
-  require("./assets/background/nature-7.jpg"),
-  require("./assets/background/nature-8.jpg"),
-  require("./assets/background/nature-9.jpg"),
-  require("./assets/background/nature-10.jpg"),
+  require("../../assets/background/nature-1.jpg"),
+  require("../../assets/background/nature-2.jpg"),
+  require("../../assets/background/nature-3.jpg"),
+  require("../../assets/background/nature-4.jpg"),
+  require("../../assets/background/nature-5.jpg"),
+  require("../../assets/background/nature-6.jpg"),
+  require("../../assets/background/nature-7.jpg"),
+  require("../../assets/background/nature-8.jpg"),
+  require("../../assets/background/nature-9.jpg"),
+  require("../../assets/background/nature-10.jpg"),
 ];
 
 const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
@@ -100,6 +100,7 @@ const Main = (): JSX.Element => {
     markTaskAsUndone,
     tasksToView,
     activeTaskData,
+    clearDoneTasks,
   } = useTasksList(isViewModeInProgress, activeTask);
 
   const handleCloseModal = useCallback(() => {
@@ -238,7 +239,11 @@ const Main = (): JSX.Element => {
             <NewTaskModalForm onAdd={handleChangeTask} task={activeTaskData} />
           </ModalWindow>
 
-          <NewTaskContainer onAdd={handleCreateNewTask} />
+          <NewTaskContainer
+            onAdd={handleCreateNewTask}
+            onClear={clearDoneTasks}
+            isViewModeInProgress={isViewModeInProgress}
+          />
         </View>
       </View>
     </ScrollView>
