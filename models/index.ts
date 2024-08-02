@@ -18,6 +18,12 @@ export interface TaskFormProps {
 
 export interface INewTaskFormProps {
   onAdd: (taskData: ITask) => void;
+  onClear: VoidFunction;
+  isViewModeInProgress?: boolean;
+}
+
+export interface INewTaskModalFormProps {
+  onAdd: (taskData: ITask) => void;
   task?: ITask;
 }
 
