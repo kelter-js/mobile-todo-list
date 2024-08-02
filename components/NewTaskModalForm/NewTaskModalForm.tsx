@@ -10,10 +10,10 @@ import {
 import { CheckBox } from "@rneui/base";
 import { Feather } from "@expo/vector-icons";
 
-import { INewTaskFormProps } from "../../models";
+import { INewTaskModalFormProps } from "../../models";
 import DatePicker from "../DatePicker";
 
-const NewTaskModalForm: FC<INewTaskFormProps> = ({ onAdd, task = {} }) => {
+const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task = {} }) => {
   const [newTaskText, setNewTaskText] = useState(task?.description ?? "");
   const [newTaskTitle, setNewTaskTitle] = useState(task?.title ?? "");
   const [isRepeatableTask, setRepeatableTask] = useState(
