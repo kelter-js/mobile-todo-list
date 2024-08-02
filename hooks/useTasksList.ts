@@ -5,6 +5,10 @@ import { ITask, ViewModes } from "../models";
 import useAppState from "./useAppState";
 import useInitiateTasks from "./useInitiateTasks";
 
+// i think way more optimized decition is to not update array each method we call
+// we should call update array in useEffect, after doneTasks or tasksList has been changed
+//we should create separately array operations related fns like sort, delete fragments from array and etc.
+
 const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
   const [tasksList, setTasksList] = useState<ITask[]>([]);
   const [doneTasks, setDoneTasks] = useState<ITask[]>([]);
@@ -15,12 +19,6 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
 
   const { isAppVisible } = useAppState();
   const { isLoadingTasks, updateStorageTasks, getTasks } = useInitiateTasks();
-
-  useEffect(() => {
-    setTimeout(() => {
-      getTasks().then((res) => console.log("fetched from state tasks:", res));
-    }, 1000);
-  });
 
   useEffect(() => {
     if (isAppVisible) {
@@ -99,10 +97,17 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
         ...tasksList.slice(0, taskIndex),
         ...tasksList.slice(taskIndex + 1),
       ];
+
       setDoneTasks(updatedTasksList);
 
       updateStorageTasks([...updatedTasksList, ...updatedDoneTasks]);
     }
+  };
+
+  const clearDoneTasks = () => {
+    setDoneTasks([]);
+
+    updateStorageTasks([...tasksList]);
   };
 
   const [activeTaskData] = tasksList.filter((task) => task.id === activeTask);
@@ -117,6 +122,7 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
     markTaskAsUndone,
     tasksToView: isViewModeInProgress ? tasksList : doneTasks,
     activeTaskData,
+    clearDoneTasks,
   };
 };
 
