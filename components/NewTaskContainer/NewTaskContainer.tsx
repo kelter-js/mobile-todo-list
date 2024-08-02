@@ -13,7 +13,11 @@ import NewTaskModalForm from "../NewTaskModalForm";
 
 const IOS_TYPE = "ios";
 
-const NewTaskForm: FC<INewTaskFormProps> = ({ onAdd }) => {
+const NewTaskForm: FC<INewTaskFormProps> = ({
+  onAdd,
+  onClear,
+  isViewModeInProgress,
+}) => {
   const [isTaskFormOpened, setTaskFormOpened] = useState(false);
 
   const isPlatformIOS = Platform.OS === IOS_TYPE;
@@ -39,8 +43,18 @@ const NewTaskForm: FC<INewTaskFormProps> = ({ onAdd }) => {
         <NewTaskModalForm onAdd={handleTaskCreation} />
       </ModalWindow>
 
-      <Pressable onPress={toggleTaskForm} style={styles.addWrapper}>
-        <Text style={styles.addText}>+</Text>
+      <Pressable
+        onPress={isViewModeInProgress ? toggleTaskForm : onClear}
+        style={[
+          styles.addWrapper,
+          !isViewModeInProgress && styles.removeContainer,
+        ]}
+      >
+        <Text
+          style={[isViewModeInProgress ? styles.addText : styles.removeText]}
+        >
+          {isViewModeInProgress ? "+" : "Clear list"}
+        </Text>
       </Pressable>
     </KeyboardAvoidingView>
   );
@@ -59,8 +73,9 @@ const styles = StyleSheet.create({
   },
   addWrapper: {
     position: "relative",
-    height: 60,
-    width: 60,
+    minHeight: 60,
+    minWidth: 60,
+    width: "auto",
     backgroundColor: "rgb(251, 238, 224)",
     borderRadius: 60,
     marginLeft: "auto",
@@ -70,6 +85,9 @@ const styles = StyleSheet.create({
     borderColor: "#c0c0c0",
     borderWidth: 1,
   },
+  removeContainer: {
+    width: 150,
+  },
   addWrapperDisabled: {
     opacity: 0.3,
   },
@@ -78,6 +96,10 @@ const styles = StyleSheet.create({
     top: "-15%",
     left: "25%",
     fontSize: 50,
+  },
+  removeText: {
+    fontSize: 30,
+    fontWeight: "bold",
   },
 });
 
