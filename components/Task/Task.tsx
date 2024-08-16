@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { ITaskProps } from "../../models";
+import { DEFAULT_COLOR } from "../../utils/getColorItem";
 
 //need to display in same space where we render title and description we need to render date
 // if date is today - show time
@@ -11,6 +12,7 @@ const Task: FC<ITaskProps> = ({
   title,
   isRepeatable,
   id,
+  taskColor,
   onOpen,
   onConfigure,
   isNotConfigurable,
@@ -25,7 +27,9 @@ const Task: FC<ITaskProps> = ({
 
   return (
     <TouchableOpacity onPress={handleOpening}>
-      <View style={styles.item}>
+      <View
+        style={[styles.item, { backgroundColor: taskColor ?? DEFAULT_COLOR }]}
+      >
         <View style={styles.itemLeft}>
           <View style={styles.square}></View>
 
