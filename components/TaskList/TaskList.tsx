@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
 
 import { getPercentage } from "../../utils/getPercentage";
@@ -12,24 +12,30 @@ const TaskList: FC<ITaskListProps> = ({
   onTaskOpen,
   onTaskConfigure,
   isViewModeInProgress,
-}) => (
-  <View style={styles.listContainer}>
-    <ScrollView style={styles.items}>
-      {tasks.map(({ id, description, title, isRepeatable }, index) => (
+}) => {
+  const renderList = useMemo(() => {
+    return tasks.map((task) => {
+      const taskId = task.id ? task.id.toString() : "";
+
+      return (
         <Task
-          id={id ? id.toString() : ""}
-          description={description}
-          title={title}
-          isRepeatable={isRepeatable}
-          key={id?.toString() ?? index}
+          id={taskId}
+          key={taskId}
           onOpen={onTaskOpen}
           onConfigure={onTaskConfigure}
           isNotConfigurable={isViewModeInProgress}
+          {...task}
         />
-      ))}
-    </ScrollView>
-  </View>
-);
+      );
+    });
+  }, [tasks, onTaskOpen, onTaskConfigure, isViewModeInProgress]);
+
+  return (
+    <View style={styles.listContainer}>
+      <ScrollView style={styles.items}>{renderList}</ScrollView>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   listContainer: {
