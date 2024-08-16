@@ -7,10 +7,12 @@ import {
   Pressable,
   Text,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { CheckBox } from "@rneui/base";
 import { Feather } from "@expo/vector-icons";
 
 import { INewTaskModalFormProps } from "../../models";
+import { DEFAULT_COLORS, getColorItem } from "../../utils/getColorItem";
 import DatePicker from "../DatePicker";
 
 const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task = {} }) => {
@@ -22,6 +24,11 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task = {} }) => {
   const [triggerDate, setTriggerDate] = useState<Date | null>(
     task?.triggerDate ?? null
   );
+  const [selectedColor, setSelectedColor] = useState<string | undefined>(
+    getColorItem(task?.taskColor)
+  );
+
+  const handleChangeColor = (newColor: string) => setSelectedColor(newColor);
 
   const isTaskEditMode = Boolean(
     task?.description && task?.title && task?.triggerDate
@@ -41,11 +48,13 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task = {} }) => {
         title: newTaskTitle,
         isRepeatable: isRepeatableTask,
         triggerDate: isTaskEditMode ? task.triggerDate : triggerDate,
+        taskColor: selectedColor ? selectedColor : undefined,
       });
 
       setNewTaskText("");
       setNewTaskTitle("");
       setRepeatableTask(false);
+      setSelectedColor(undefined);
     }
   };
 
@@ -70,6 +79,17 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task = {} }) => {
         onChangeText={setNewTaskText}
         value={newTaskText}
       />
+
+      <Picker
+        selectedValue={selectedColor}
+        onValueChange={handleChangeColor}
+        style={[styles.input, styles.titleInput]}
+        selectionColor="#28A745"
+      >
+        {DEFAULT_COLORS.map(({ label, value }) => (
+          <Picker.Item key={value} label={label} value={value} color={value} />
+        ))}
+      </Picker>
 
       <View
         style={[
