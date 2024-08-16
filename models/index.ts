@@ -33,6 +33,7 @@ export interface ITask {
   isRepeatable: boolean;
   id?: string | Uint8Array;
   triggerDate?: Date;
+  taskColor?: string;
 }
 
 export interface CustomCheckboxProps {
@@ -77,4 +78,9 @@ export enum YEAR_SEASONS {
 export enum ACTIONS {
   UPDATING = "Updating",
   LOADING = "Loading",
+}
+
+export interface ColorItem {
+  label: string;
+  value: string;
 }
