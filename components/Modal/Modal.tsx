@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    height: 290,
+    height: 330,
     width: getPercentage(90, windowWidth),
   },
   closeModalButton: {
