@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import uuid from "react-native-uuid";
 
+import { tasksService } from "../utils/tasksService";
 import { ITask, ViewModes } from "../models";
 import useAppState from "./useAppState";
 import useInitiateTasks from "./useInitiateTasks";
@@ -31,18 +32,14 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
   }, [isAppVisible]);
 
   const updateTask = (taskData: ITask) => {
-    const [taskToChange] = tasksList.filter((task) => task.id === taskData.id);
-    const taskIndex = tasksList.indexOf(taskToChange);
-
-    const updatedList = [
-      ...tasksList.slice(0, taskIndex),
-      { ...taskData },
-      ...tasksList.slice(taskIndex + 1),
-    ];
+    const updatedList = tasksService.getUpdatedListByChangedTask(
+      taskData,
+      tasksList
+    );
 
     setTasksList(updatedList);
 
-    updateStorageTasks([...updatedList, ...doneTasks]);
+    updateStorageTasks(tasksService.getMergedTasksList(updatedList, doneTasks));
   };
 
   const removeTask = (viewMode: keyof typeof ViewModes, openedTask: string) => {
@@ -50,19 +47,20 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
       const taskToRemove = tasksList.find((item) => item.id === openedTask);
 
       if (taskToRemove) {
-        const taskIndex = tasksList.indexOf(taskToRemove);
+        const { updatedDoneTasks, updatedTasksList } =
+          tasksService.getUpdatedListByRemovedTask(
+            taskToRemove,
+            doneTasks,
+            tasksList
+          );
 
-        const updatedDoneTasks = [...doneTasks, taskToRemove];
         setDoneTasks(updatedDoneTasks);
-
-        const updatedTasksList = [
-          ...tasksList.slice(0, taskIndex),
-          ...tasksList.slice(taskIndex + 1),
-        ];
 
         setTasksList(updatedTasksList);
 
-        updateStorageTasks([...updatedTasksList, ...updatedDoneTasks]);
+        updateStorageTasks(
+          tasksService.getMergedTasksList(updatedTasksList, updatedDoneTasks)
+        );
       }
     }
 
@@ -70,16 +68,16 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
       const taskToRemove = doneTasks.find((item) => item.id === openedTask);
 
       if (taskToRemove) {
-        const taskIndex = doneTasks.indexOf(taskToRemove);
-
-        const updatedDoneTasks = [
-          ...doneTasks.slice(0, taskIndex),
-          ...doneTasks.slice(taskIndex + 1),
-        ];
+        const { updatedDoneTasks } = tasksService.getUpdatedListByRemovedTask(
+          taskToRemove,
+          doneTasks
+        );
 
         setDoneTasks(updatedDoneTasks);
 
-        updateStorageTasks([...tasksList, ...updatedDoneTasks]);
+        updateStorageTasks(
+          tasksService.getMergedTasksList(tasksList, updatedDoneTasks)
+        );
       }
     }
   };
@@ -88,19 +86,19 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
     const taskToMoveBack = doneTasks.find((item) => item.id === openedTask);
 
     if (taskToMoveBack) {
-      const taskIndex = doneTasks.indexOf(taskToMoveBack);
+      const { updatedDoneTasks, updatedTasksList } =
+        tasksService.getUpdatedListsByChangeMark(
+          taskToMoveBack,
+          tasksList,
+          doneTasks
+        );
 
-      const updatedDoneTasks = [...doneTasks, taskToMoveBack];
       setTasksList(updatedDoneTasks);
-
-      const updatedTasksList = [
-        ...tasksList.slice(0, taskIndex),
-        ...tasksList.slice(taskIndex + 1),
-      ];
-
       setDoneTasks(updatedTasksList);
 
-      updateStorageTasks([...updatedTasksList, ...updatedDoneTasks]);
+      updateStorageTasks(
+        tasksService.getMergedTasksList(updatedTasksList, updatedDoneTasks)
+      );
     }
   };
 
