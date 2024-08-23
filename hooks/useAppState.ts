@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const useAppState = () => {
   const currentAppState = useRef(AppState.currentState);
+
   const [isAppVisible, setAppVisible] = useState(
     currentAppState.current === "active"
   );
