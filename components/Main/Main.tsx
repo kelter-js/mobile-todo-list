@@ -47,34 +47,16 @@ const backgroundPaths = [
 
 const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
 
-//todo: remove task that is not repeatable immediately
 //todo: split states into one global and use reducer
-//todo: we should store tasks at some kind of local storage
-//todo: the main idea is - when user reopen application, show him loader, while loader spinning
-// we just map through tasks id array, check task timer - if timer is ended - task should be removed, if its not repeatable
-//if its repeatable - task should be marked as done
-//need to display splanscreen component while maintaining tasks in background - get from store, map through them, other operations
-
-// create hooks folder, create useInitiate hook, create ENUM with all kind of keys that we use
-// we need state to indicate if application should reinitiate or not, when app in background, we should set state into true or when its first launch
-// then we should reinitiate app, get all tasks from store, delete those thats not repeataple and already fired
-// those which repeatable we need to in doneTasks, others in all tasks list, while we initiate we show splashcreen component
-//after initiation we need to update inner local storage with new set of tasks, because we might delete some of them
-//if user change title, change trigger or repeatable state, or description - we should get from localstore array, map thorugh it,
-// find needed task, update object, set it back
 //we need to create reducers, too much logic layer app file containing
 
 //we need to check that user selected new date, before we put task from done to task in progress
-//we need to add button to clear ALL done tasks
+//we need to add sort task list button for date in ASC and DESC orders
 
-//we also need to add a flag to task interface, something like - done
-//and if task is done, but isnt repeatable - delete it
-//this flag will help in case, if user reload app, and he previously manually set that task is done - we already after loading will load it
-//into separated done tasks list
-//so handler of button Done should change flag done in task to true
+//we need to remove scheduled notification if user delete or set task as done
 
-//also, since its two separate UI parts, we can check and change button description
-//if task isnt repeatable - done button should delete task, if task is repeatable - then we can mark it as done
+//we need to check when we change or create task, in callback we should set new notification
+//when change apply - check old trigger date and new trigger date, if they arent the same
 
 const Main = (): JSX.Element => {
   //initiate notification service

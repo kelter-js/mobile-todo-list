@@ -15,15 +15,18 @@ import { INewTaskModalFormProps } from "../../models";
 import { DEFAULT_COLORS, getColorItem } from "../../utils/getColorItem";
 import DatePicker from "../DatePicker";
 
+//we need to extract all useState into one hook - like useForm
 const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task = {} }) => {
   const [newTaskText, setNewTaskText] = useState(task?.description ?? "");
   const [newTaskTitle, setNewTaskTitle] = useState(task?.title ?? "");
   const [isRepeatableTask, setRepeatableTask] = useState(
     task?.isRepeatable ?? false
   );
+
   const [triggerDate, setTriggerDate] = useState<Date | null>(
     task?.triggerDate ?? null
   );
+
   const [selectedColor, setSelectedColor] = useState<string | undefined>(
     getColorItem(task?.taskColor)
   );
