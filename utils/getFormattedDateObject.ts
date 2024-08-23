@@ -1,5 +1,5 @@
 import getMonthName from "./getMonthName";
-import { YEAR_SEASONS } from "../models";
+import { YEAR_SEASONS } from "../enums";
 
 const getSeason = (monthIndex: number): keyof typeof YEAR_SEASONS => {
   switch (true) {

@@ -34,6 +34,7 @@ export interface ITask {
   id?: string | Uint8Array;
   triggerDate?: Date;
   taskColor?: string;
+  taskIdentificatorId?: string;
 }
 
 export interface CustomCheckboxProps {
@@ -55,9 +56,9 @@ export interface ITaskListProps {
   isViewModeInProgress: boolean;
 }
 
-export enum ViewModes {
-  FINISHED = "FINISHED",
-  IN_PROGRESS = "IN_PROGRESS",
+export interface ColorItem {
+  label: string;
+  value: string;
 }
 
 export interface FormattedDate {
@@ -66,21 +67,4 @@ export interface FormattedDate {
   date: number;
   hour: number;
   minutes: number;
-}
-
-export enum YEAR_SEASONS {
-  WINTER = "WINTER",
-  SPRING = "SPRING",
-  SUMMER = "SUMMER",
-  AUTUMN = "AUTUMN",
-}
-
-export enum ACTIONS {
-  UPDATING = "Updating",
-  LOADING = "Loading",
-}
-
-export interface ColorItem {
-  label: string;
-  value: string;
 }

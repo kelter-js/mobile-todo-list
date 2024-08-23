@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ViewModes } from "../models";
+import { ViewModes } from "../enums";
 
 const useViewMode = () => {
   const [viewMode, setViewMode] = useState<keyof typeof ViewModes>(

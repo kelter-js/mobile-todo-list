@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Pressable, View, Text, StyleSheet } from "react-native";
 
-import { ViewModes } from "../../models";
+import { ViewModes } from "../../enums";
 
 interface TaskFilterButtonsProps {
   isViewModeInProgress: boolean;

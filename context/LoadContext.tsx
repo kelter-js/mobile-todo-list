@@ -6,7 +6,7 @@ import {
   useContext,
   useMemo,
 } from "react";
-import { ACTIONS } from "../models";
+import { ACTIONS } from "../enums";
 
 interface LoadContextProps {
   action: ACTIONS;

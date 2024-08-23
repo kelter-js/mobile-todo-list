@@ -2,14 +2,12 @@ import { useState, useEffect } from "react";
 import uuid from "react-native-uuid";
 
 import { tasksService } from "../utils/tasksService";
-import { ITask, ViewModes } from "../models";
+import { ViewModes } from "../enums";
+import { ITask } from "../models";
 import useAppState from "./useAppState";
 import useInitiateTasks from "./useInitiateTasks";
 
-// i think way more optimized decition is to not update array each method we call
-// we should call update array in useEffect, after doneTasks or tasksList has been changed
-//we should create separately array operations related fns like sort, delete fragments from array and etc.
-
+//we need to add sort to fns list
 const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
   const [tasksList, setTasksList] = useState<ITask[]>([]);
   const [doneTasks, setDoneTasks] = useState<ITask[]>([]);
@@ -23,7 +21,6 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
 
   useEffect(() => {
     if (isAppVisible) {
-      //here we need to set two separate states - tasks and doneTasks
       getTasks().then(({ parsedTasksList, repeatableTasksList }) => {
         setTasksList(parsedTasksList);
         setDoneTasks(repeatableTasksList);

@@ -2,7 +2,7 @@ import { FC } from "react";
 import { StyleSheet, ImageBackground } from "react-native";
 
 import getFormattedDateObject from "../../utils/getFormattedDateObject";
-import { YEAR_SEASONS } from "../../models";
+import { YEAR_SEASONS } from "../../enums";
 
 interface DateDisplayProps {
   date: Date;
