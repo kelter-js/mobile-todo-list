@@ -28,6 +28,16 @@ export async function schedulePushNotification(text: string, date: Date) {
   return { notificationId, date };
 }
 
+export async function cancelScheduledNotification(notificationId: string) {
+  Alert.alert(`task id, which need to be cancelled: ${notificationId}`);
+
+  await Notifications.cancelScheduledNotificationAsync(notificationId).then(
+    () => {
+      Alert.alert("task notification successfully cancelled!");
+    }
+  );
+}
+
 export const registerForPushNotificationsAsync = async () => {
   let token;
 
