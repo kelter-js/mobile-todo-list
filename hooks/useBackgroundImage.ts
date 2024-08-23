@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import getRandom from "../utils/getRandom";
 
+const DEFAULT_TIMEOUT = 6500;
+
 const useBackgroundImage = (imagePaths: string[]) => {
   const [currentImagePath, setCurrentImagePath] = useState("");
 
@@ -8,7 +10,7 @@ const useBackgroundImage = (imagePaths: string[]) => {
     const timerId = setInterval(() => {
       const newImageSrc = imagePaths[getRandom(0, imagePaths.length - 1)];
       setCurrentImagePath(newImageSrc);
-    }, 6500);
+    }, DEFAULT_TIMEOUT);
 
     return () => clearInterval(timerId);
   }, []);
