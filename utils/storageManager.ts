@@ -16,6 +16,13 @@ const INITIAL_TASKS = [
   },
   {
     id: uuid.v1(),
+    description: "date-testing",
+    title: "Should render date in short format, just time",
+    isRepeatable: false,
+    triggerDate: new Date(Date.now() + 150000),
+  },
+  {
+    id: uuid.v1(),
     description: "bleh-bleh",
     title: "second task",
     isRepeatable: false,
