@@ -2,11 +2,9 @@ import { FC } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { ITaskProps } from "../../models";
+import { getShortReviewDate } from "../../utils/getShortReviewDate";
 import { DEFAULT_COLOR } from "../../utils/getColorItem";
-
-//need to display in same space where we render title and description we need to render date
-// if date is today - show time
+import { ITaskProps } from "../../models";
 const Task: FC<ITaskProps> = ({
   description,
   title,
@@ -16,6 +14,7 @@ const Task: FC<ITaskProps> = ({
   onOpen,
   onConfigure,
   isNotConfigurable,
+  triggerDate,
 }) => {
   const handleOpening = () => {
     onOpen(String(id));
@@ -34,8 +33,25 @@ const Task: FC<ITaskProps> = ({
           <View style={styles.square}></View>
 
           <View style={styles.taskContainer}>
-            <Text style={styles.taskTitle}>{title}</Text>
-            <Text style={styles.taskDescription}>{description}</Text>
+            <Text
+              style={styles.taskTitle}
+              numberOfLines={1}
+              ellipsizeMode="clip"
+            >
+              {title}
+            </Text>
+            <Text
+              style={styles.taskDescription}
+              numberOfLines={1}
+              ellipsizeMode="clip"
+            >
+              {description}
+            </Text>
+            {triggerDate && (
+              <Text style={styles.taskDescription}>
+                {getShortReviewDate(triggerDate)}
+              </Text>
+            )}
           </View>
         </View>
 
@@ -75,6 +91,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   taskTitle: {
+    flex: 1,
+    width: 261,
     fontSize: 18,
     fontWeight: "700",
   },
@@ -85,7 +103,7 @@ const styles = StyleSheet.create({
   calendarIcon: {
     marginRight: 10,
   },
-  taskDescription: { fontSize: 16, fontWeight: "400" },
+  taskDescription: { fontSize: 16, fontWeight: "400", flex: 1, width: 261 },
   item: {
     padding: 10,
     flexDirection: "row",
