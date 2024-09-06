@@ -46,6 +46,10 @@ const TaskForm: FC<TaskFormProps> = ({
     setSelectedDate(date);
   }, []);
 
+  const handleRemoveTask = () => {
+    onRemoveTask(taskId);
+  };
+
   return (
     <>
       <DateDisplay date={selectedDate} />
@@ -57,7 +61,7 @@ const TaskForm: FC<TaskFormProps> = ({
             styles.actionButton,
             isViewModeInProgress ? styles.doneButton : styles.deleteButton,
           ]}
-          onPress={onRemoveTask}
+          onPress={handleRemoveTask}
         >
           <Text style={styles.actionText}>
             {removeButtonDescription(isViewModeInProgress)}

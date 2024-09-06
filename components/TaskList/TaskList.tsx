@@ -12,6 +12,7 @@ const TaskList: FC<ITaskListProps> = ({
   onTaskOpen,
   onTaskConfigure,
   isViewModeInProgress,
+  onTaskDelete,
 }) => {
   const renderList = useMemo(() => {
     return tasks.map((task) => {
@@ -24,6 +25,7 @@ const TaskList: FC<ITaskListProps> = ({
           onOpen={onTaskOpen}
           onConfigure={onTaskConfigure}
           isNotConfigurable={isViewModeInProgress}
+          onDelete={onTaskDelete}
           {...task}
         />
       );
