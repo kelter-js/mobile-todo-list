@@ -4,6 +4,7 @@ const useManageTask = () => {
   const [isModalWindowOpened, setModalOpened] = useState(false);
   const [isTaskEditMode, setTaskEditMode] = useState(false);
   const [activeTask, setActiveTask] = useState("");
+  const [deleteTask, setDeleteTask] = useState("");
 
   return {
     isModalWindowOpened,
@@ -12,6 +13,8 @@ const useManageTask = () => {
     setModalOpened,
     setTaskEditMode,
     setActiveTask,
+    deleteTask,
+    setDeleteTask,
   };
 };
 
