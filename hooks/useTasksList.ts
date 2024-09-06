@@ -8,7 +8,11 @@ import useAppState from "./useAppState";
 import useInitiateTasks from "./useInitiateTasks";
 
 //we need to add sort to fns list
-const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
+const useTasksList = (
+  isViewModeInProgress: boolean,
+  activeTask: string,
+  taskToDelete: string
+) => {
   const [tasksList, setTasksList] = useState<ITask[]>([]);
   const [doneTasks, setDoneTasks] = useState<ITask[]>([]);
 
@@ -39,7 +43,37 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
     updateStorageTasks(tasksService.getMergedTasksList(updatedList, doneTasks));
   };
 
-  const removeTask = (viewMode: keyof typeof ViewModes, openedTask: string) => {
+  const removeTask = (
+    viewMode: keyof typeof ViewModes,
+    openedTask: string,
+    permanentDeletion?: boolean
+  ) => {
+    if (permanentDeletion) {
+      const taskToRemove = [...doneTasks, ...tasksList].find(
+        (item) => item.id === openedTask
+      );
+
+      if (taskToRemove) {
+        const { updatedDoneTasks, updatedTasksList } =
+          tasksService.getListWithoutTask({
+            taskToRemove,
+            doneTasks,
+            tasksList,
+            isDone: viewMode === ViewModes.FINISHED,
+          });
+
+        setDoneTasks(updatedDoneTasks);
+
+        setTasksList(updatedTasksList);
+
+        updateStorageTasks(
+          tasksService.getMergedTasksList(updatedTasksList, updatedDoneTasks)
+        );
+      }
+
+      return;
+    }
+
     if (viewMode === ViewModes.IN_PROGRESS) {
       const taskToRemove = tasksList.find((item) => item.id === openedTask);
 
@@ -106,6 +140,7 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
   };
 
   const [activeTaskData] = tasksList.filter((task) => task.id === activeTask);
+  const [deleteTaskData] = tasksList.filter((task) => task.id === taskToDelete);
 
   return {
     doneTasks,
@@ -117,6 +152,8 @@ const useTasksList = (isViewModeInProgress: boolean, activeTask: string) => {
     markTaskAsUndone,
     tasksToView: isViewModeInProgress ? tasksList : doneTasks,
     activeTaskData,
+
+    deleteTaskData,
     clearDoneTasks,
   };
 };
