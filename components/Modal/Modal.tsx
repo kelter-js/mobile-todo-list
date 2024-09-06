@@ -12,11 +12,13 @@ import { IModalWindowProps } from "../../models";
 import { getPercentage } from "../../utils/getPercentage";
 
 const windowWidth = Dimensions.get("window").width;
+const DEFAULT_HEIGHT = 330;
 
 const ModalWindow: FC<IModalWindowProps> = ({
   onCloseModal,
   children,
   isWindowOpened,
+  height = DEFAULT_HEIGHT,
 }) => {
   if (!isWindowOpened) {
     return null;
@@ -28,7 +30,7 @@ const ModalWindow: FC<IModalWindowProps> = ({
         <TouchableOpacity onPress={onCloseModal} style={styles.modalOverlay}>
           <TouchableOpacity activeOpacity={1}>
             <View style={styles.centeredView}>
-              <View style={styles.modalView}>
+              <View style={[styles.modalView, { height }]}>
                 <TouchableOpacity
                   style={styles.closeModalButton}
                   onPress={onCloseModal}
@@ -89,7 +91,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    height: 330,
+
     width: getPercentage(90, windowWidth),
   },
   closeModalButton: {
