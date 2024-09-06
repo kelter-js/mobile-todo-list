@@ -31,6 +31,7 @@ import useManageTask from "../../hooks/useManageTask";
 import useTasksList from "../../hooks/useTasksList";
 import useAppState from "../../hooks/useAppState";
 import useViewMode from "../../hooks/useViewMode";
+import { ConfirmDeletion } from "../ConfirmDeletion";
 
 const backgroundPaths = [
   require("../../assets/background/nature-1.jpg"),
@@ -46,6 +47,7 @@ const backgroundPaths = [
 ];
 
 const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
+const DELETION_MODAL_HEIGHT = 140;
 
 //todo: split states into one global and use reducer
 //we need to create reducers, too much logic layer app file containing
@@ -72,6 +74,8 @@ const Main = (): JSX.Element => {
     setModalOpened,
     setTaskEditMode,
     setActiveTask,
+    deleteTask,
+    setDeleteTask,
   } = useManageTask();
 
   const {
@@ -79,15 +83,23 @@ const Main = (): JSX.Element => {
     createNewTask,
     updateTask,
     removeTask,
+
     markTaskAsUndone,
     tasksToView,
     activeTaskData,
+    deleteTaskData,
     clearDoneTasks,
-  } = useTasksList(isViewModeInProgress, activeTask);
+  } = useTasksList(isViewModeInProgress, activeTask, deleteTask);
 
   const handleCloseModal = useCallback(() => {
     setModalOpened(false);
     setActiveTask("");
+    setDeleteTask("");
+  }, []);
+
+  const handleCloseDeletionModal = useCallback(() => {
+    setModalOpened(false);
+    setDeleteTask("");
   }, []);
 
   const handleResetOpenedTask = useCallback(() => {
@@ -97,6 +109,11 @@ const Main = (): JSX.Element => {
 
   const handleTaskOpen = useCallback((id: string) => {
     setActiveTask(id);
+  }, []);
+
+  const handleDeleteTask = useCallback((id: string) => {
+    setDeleteTask(id);
+    setModalOpened(true);
   }, []);
 
   const handleTaskConfigure = useCallback((id: string) => {
@@ -157,11 +174,14 @@ const Main = (): JSX.Element => {
   //   }
   // }, [isAppVisible]);
 
-  const handleRemoveTask = useCallback(() => {
-    removeTask(viewMode, activeTask);
+  const handleRemoveTask = useCallback(
+    (id: string, isPermanentDeletion?: boolean) => {
+      removeTask(viewMode, id, isPermanentDeletion);
 
-    handleCloseModal();
-  }, [viewMode, activeTask]);
+      handleCloseModal();
+    },
+    [viewMode, removeTask]
+  );
 
   const handleMoveTaskBack = useCallback(() => {
     markTaskAsUndone(activeTask);
@@ -198,11 +218,14 @@ const Main = (): JSX.Element => {
             onTaskOpen={handleTaskOpen}
             onTaskConfigure={handleTaskConfigure}
             isViewModeInProgress={isViewModeInProgress}
+            onTaskDelete={handleDeleteTask}
           />
 
           <ModalWindow
             onCloseModal={handleResetOpenedTask}
-            isWindowOpened={isModalWindowOpened && !isTaskEditMode}
+            isWindowOpened={
+              isModalWindowOpened && !isTaskEditMode && !deleteTask
+            }
           >
             <TaskForm
               taskId={String(activeTask)}
@@ -211,6 +234,19 @@ const Main = (): JSX.Element => {
               onCreateReminder={createNewNotification}
               isViewModeInProgress={isViewModeInProgress}
               task={activeTaskData}
+            />
+          </ModalWindow>
+
+          <ModalWindow
+            onCloseModal={handleCloseDeletionModal}
+            isWindowOpened={Boolean(isModalWindowOpened && deleteTask)}
+            height={DELETION_MODAL_HEIGHT}
+          >
+            <ConfirmDeletion
+              taskId={String(deleteTask)}
+              onRemoveTask={handleRemoveTask}
+              task={deleteTaskData}
+              onClose={handleCloseDeletionModal}
             />
           </ModalWindow>
 
