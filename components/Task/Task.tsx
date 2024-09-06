@@ -5,6 +5,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { getShortReviewDate } from "../../utils/getShortReviewDate";
 import { DEFAULT_COLOR } from "../../utils/getColorItem";
 import { ITaskProps } from "../../models";
+
 const Task: FC<ITaskProps> = ({
   description,
   title,
@@ -15,6 +16,7 @@ const Task: FC<ITaskProps> = ({
   onConfigure,
   isNotConfigurable,
   triggerDate,
+  onDelete,
 }) => {
   const handleOpening = () => {
     onOpen(String(id));
@@ -24,14 +26,16 @@ const Task: FC<ITaskProps> = ({
     onConfigure(String(id));
   };
 
+  const handleDeletion = () => {
+    onDelete(String(id));
+  };
+
   return (
     <TouchableOpacity onPress={handleOpening}>
       <View
         style={[styles.item, { backgroundColor: taskColor ?? DEFAULT_COLOR }]}
       >
         <View style={styles.itemLeft}>
-          <View style={styles.square}></View>
-
           <View style={styles.taskContainer}>
             <Text
               style={styles.taskTitle}
@@ -56,8 +60,16 @@ const Task: FC<ITaskProps> = ({
         </View>
 
         <View style={styles.controlsContainer}>
+          <TouchableOpacity
+            onPress={handleDeletion}
+            style={{ marginBottom: 2 }}
+          >
+            <MaterialCommunityIcons name="delete" size={24} color="black" />
+          </TouchableOpacity>
+
           {isNotConfigurable && (
             <View
+              style={styles.configureControls}
               onStartShouldSetResponder={() => true}
               onTouchEnd={(e) => {
                 e.stopPropagation();
@@ -68,7 +80,6 @@ const Task: FC<ITaskProps> = ({
                   name="calendar-edit"
                   size={24}
                   color="black"
-                  style={styles.calendarIcon}
                 />
               </TouchableOpacity>
             </View>
@@ -92,18 +103,23 @@ const styles = StyleSheet.create({
   },
   taskTitle: {
     flex: 1,
-    width: 261,
+    width: 219,
     fontSize: 18,
     fontWeight: "700",
+  },
+  configureControls: {
+    flex: 1,
+    flexDirection: "row",
+    gap: 8,
   },
   controlsContainer: {
     display: "flex",
     flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
-  calendarIcon: {
-    marginRight: 10,
-  },
-  taskDescription: { fontSize: 16, fontWeight: "400", flex: 1, width: 261 },
+
+  taskDescription: { fontSize: 16, fontWeight: "400", flex: 1, width: 219 },
   item: {
     padding: 10,
     flexDirection: "row",
@@ -121,14 +137,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexWrap: "wrap",
   },
-  square: {
-    height: 24,
-    width: 24,
-    backgroundColor: "#55BCF6",
-    opacity: 0.4,
-    borderRadius: 5,
-    marginRight: 15,
-  },
+
   circular: {
     height: 24,
     width: 24,
