@@ -4,16 +4,24 @@ export interface IModalWindowProps {
   onCloseModal: VoidFunction;
   children: React.ReactNode;
   isWindowOpened: boolean;
+  height?: number;
 }
 
 export interface TaskFormProps {
   isViewModeInProgress: boolean;
-  onRemoveTask: VoidFunction;
+  onRemoveTask: (id: string, isPermanentDeletion?: boolean) => void;
   onMoveTaskBack: VoidFunction;
   taskId: string;
   taskText?: string;
   onCreateReminder: (date: Date, taskId: string | Uint8Array) => void;
   task: ITask;
+}
+
+export interface ConfirmDeletionProps {
+  taskId: string;
+  onRemoveTask: (id: string, isPermanentDeletion?: boolean) => void;
+  task: ITask;
+  onClose: VoidFunction;
 }
 
 export interface INewTaskFormProps {
@@ -45,6 +53,7 @@ export interface CustomCheckboxProps {
 export interface ITaskProps extends ITask {
   onOpen: (id: string) => void;
   onConfigure: (id: string) => void;
+  onDelete: (id: string) => void;
   id: string | Uint8Array;
   isNotConfigurable: boolean;
 }
@@ -53,6 +62,7 @@ export interface ITaskListProps {
   tasks: Array<ITask>;
   onTaskOpen: (id: string) => void;
   onTaskConfigure: (id: string) => void;
+  onTaskDelete: (id: string) => void;
   isViewModeInProgress: boolean;
 }
 
