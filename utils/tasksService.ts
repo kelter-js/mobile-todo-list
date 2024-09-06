@@ -69,4 +69,26 @@ export const tasksService = {
       };
     }
   },
+
+  getListWithoutTask({
+    taskToRemove,
+    doneTasks,
+    tasksList,
+    isDone,
+  }: {
+    taskToRemove: ITask;
+    doneTasks: ITask[];
+    tasksList: ITask[];
+    isDone: boolean;
+  }) {
+    const operationList = isDone ? doneTasks : tasksList;
+    const taskIndex = operationList.indexOf(taskToRemove);
+
+    operationList.splice(taskIndex, 1);
+
+    return {
+      updatedDoneTasks: doneTasks,
+      updatedTasksList: tasksList,
+    };
+  },
 };
