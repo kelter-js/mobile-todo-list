@@ -1,0 +1,1 @@
+export { ConfirmDeletion } from "./ConfirmDeletion";
