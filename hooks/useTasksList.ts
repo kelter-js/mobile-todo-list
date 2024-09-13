@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import uuid from "react-native-uuid";
 
 import { tasksService } from "../utils/tasksService";
@@ -6,6 +6,7 @@ import { ViewModes } from "../enums";
 import { ITask } from "../models";
 import useAppState from "./useAppState";
 import useInitiateTasks from "./useInitiateTasks";
+import { cancelScheduledNotification } from "../utils/notifications";
 
 //we need to add sort to fns list
 const useTasksList = (
@@ -43,7 +44,7 @@ const useTasksList = (
     updateStorageTasks(tasksService.getMergedTasksList(updatedList, doneTasks));
   };
 
-  const removeTask = (
+  const removeTask = async (
     viewMode: keyof typeof ViewModes,
     openedTask: string,
     permanentDeletion?: boolean
@@ -54,6 +55,10 @@ const useTasksList = (
       );
 
       if (taskToRemove) {
+        if (taskToRemove.taskIdentificatorId) {
+          await cancelScheduledNotification(taskToRemove.taskIdentificatorId);
+        }
+
         const { updatedDoneTasks, updatedTasksList } =
           tasksService.getListWithoutTask({
             taskToRemove,
@@ -78,6 +83,10 @@ const useTasksList = (
       const taskToRemove = tasksList.find((item) => item.id === openedTask);
 
       if (taskToRemove) {
+        if (taskToRemove.taskIdentificatorId) {
+          await cancelScheduledNotification(taskToRemove.taskIdentificatorId);
+        }
+
         const { updatedDoneTasks, updatedTasksList } =
           tasksService.getUpdatedListByRemovedTask(
             taskToRemove,
@@ -140,7 +149,9 @@ const useTasksList = (
   };
 
   const [activeTaskData] = tasksList.filter((task) => task.id === activeTask);
-  const [deleteTaskData] = tasksList.filter((task) => task.id === taskToDelete);
+  const [deleteTaskData] = [...tasksList, ...doneTasks].filter(
+    (task) => task.id === taskToDelete
+  );
 
   return {
     doneTasks,
