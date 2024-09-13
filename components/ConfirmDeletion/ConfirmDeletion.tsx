@@ -1,4 +1,5 @@
-import { FC } from "react";
+import React, { FC } from "react";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Pressable, Text, StyleSheet, View } from "react-native";
 import { ConfirmDeletionProps } from "../../models";
 
@@ -15,15 +16,25 @@ export const ConfirmDeletion: FC<ConfirmDeletionProps> = ({
   return (
     <View style={styles.container}>
       <Text>Вы точно хотите удалить задачу:</Text>
-      <Text>{`${task.title}`}</Text>
-      <Text>{`${task.description}`}</Text>
+      <Text>{`${task?.title}`}</Text>
+      <Text>{`${task?.description}`}</Text>
 
       <View style={styles.controls}>
         <Pressable style={styles.control} onPress={onClose}>
-          <Text style={styles.controlText}>Отмена</Text>
+          <Text style={[styles.controlText, styles.controlTextWrapper]}>
+            <MaterialIcons name="cancel" size={24} color="black" />
+            Отмена
+          </Text>
         </Pressable>
-        <Pressable style={styles.control} onPress={handleRemove}>
-          <Text style={styles.controlText}>Удалить</Text>
+
+        <Pressable
+          style={[styles.control, styles.deleteButton]}
+          onPress={handleRemove}
+        >
+          <Text style={[styles.controlText, styles.controlTextWrapper]}>
+            <MaterialIcons name="delete-sweep" size={24} color="red" />
+            Удалить
+          </Text>
         </Pressable>
       </View>
     </View>
@@ -40,6 +51,9 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: "auto",
   },
+  deleteButton: {
+    borderColor: "red",
+  },
   control: {
     borderWidth: 1,
     borderRadius: 10,
@@ -48,5 +62,13 @@ const styles = StyleSheet.create({
   },
   controlText: {
     fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  controlTextWrapper: {
+    display: "flex",
+    alignItems: "center",
+    gap: 4,
+    color: "black",
   },
 });
