@@ -47,7 +47,7 @@ const backgroundPaths = [
 ];
 
 const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
-const DELETION_MODAL_HEIGHT = 140;
+const DELETION_MODAL_HEIGHT = 160;
 
 //todo: split states into one global and use reducer
 //we need to create reducers, too much logic layer app file containing
@@ -144,10 +144,11 @@ const Main = (): JSX.Element => {
     remindDate: Date,
     taskId: string | Uint8Array
   ) => {
-    const { date, notificationId } = await schedulePushNotification(
-      activeTask,
-      remindDate
-    );
+    const { date, notificationId } = await schedulePushNotification({
+      title: activeTask,
+      date: remindDate,
+      text: activeTask,
+    });
 
     handleCloseModal();
 
@@ -221,6 +222,7 @@ const Main = (): JSX.Element => {
             onTaskDelete={handleDeleteTask}
           />
 
+          {/* view task card */}
           <ModalWindow
             onCloseModal={handleResetOpenedTask}
             isWindowOpened={
@@ -237,6 +239,7 @@ const Main = (): JSX.Element => {
             />
           </ModalWindow>
 
+          {/* delete task */}
           <ModalWindow
             onCloseModal={handleCloseDeletionModal}
             isWindowOpened={Boolean(isModalWindowOpened && deleteTask)}
@@ -250,6 +253,7 @@ const Main = (): JSX.Element => {
             />
           </ModalWindow>
 
+          {/* create new task */}
           <ModalWindow
             onCloseModal={handleResetOpenedTask}
             isWindowOpened={isModalWindowOpened && isTaskEditMode}

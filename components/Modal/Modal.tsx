@@ -18,7 +18,7 @@ const ModalWindow: FC<IModalWindowProps> = ({
   onCloseModal,
   children,
   isWindowOpened,
-  height = DEFAULT_HEIGHT,
+  height,
 }) => {
   if (!isWindowOpened) {
     return null;
@@ -30,7 +30,7 @@ const ModalWindow: FC<IModalWindowProps> = ({
         <TouchableOpacity onPress={onCloseModal} style={styles.modalOverlay}>
           <TouchableOpacity activeOpacity={1}>
             <View style={styles.centeredView}>
-              <View style={[styles.modalView, { height }]}>
+              <View style={[styles.modalView, { height: height || "auto" }]}>
                 <TouchableOpacity
                   style={styles.closeModalButton}
                   onPress={onCloseModal}
