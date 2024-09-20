@@ -69,6 +69,10 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task = {} }) => {
 
   return (
     <View style={styles.taskContainer}>
+      <Text style={styles.title}>
+        {isTaskEditMode ? "Edit" : "Create"} task:
+      </Text>
+
       <TextInput
         style={styles.input}
         placeholder="Task description"
@@ -131,6 +135,7 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task = {} }) => {
 };
 
 const styles = StyleSheet.create({
+  title: { fontSize: 22, fontWeight: "bold" },
   checkboxContainer: {
     display: "flex",
     flexDirection: "row",

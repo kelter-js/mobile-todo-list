@@ -72,12 +72,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     width: "100%",
+    marginBottom: 15,
   },
   titleContainer: {
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     flexDirection: "row",
     width: "100%",
+    fontSize: 22,
+    fontWeight: "bold",
   },
   itemContainer: {
     display: "flex",

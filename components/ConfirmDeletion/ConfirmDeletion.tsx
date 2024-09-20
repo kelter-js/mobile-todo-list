@@ -15,9 +15,13 @@ export const ConfirmDeletion: FC<ConfirmDeletionProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text>Вы точно хотите удалить задачу:</Text>
-      <Text>{`${task?.title}`}</Text>
-      <Text>{`${task?.description}`}</Text>
+      <Text style={styles.mainTitle}>Удалить задачу?</Text>
+
+      <View style={styles.metaContainer}>
+        <Text>Вы точно хотите удалить задачу:</Text>
+        <Text>{`${task?.title}`}</Text>
+        <Text>{`${task?.description}`}</Text>
+      </View>
 
       <View style={styles.controls}>
         <Pressable style={styles.control} onPress={onClose}>
@@ -42,6 +46,9 @@ export const ConfirmDeletion: FC<ConfirmDeletionProps> = ({
 };
 
 const styles = StyleSheet.create({
+  metaContainer: {
+    marginTop: 15,
+  },
   container: { flex: 1, flexDirection: "column", width: "100%" },
   controls: {
     flex: 1,
@@ -50,6 +57,12 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     width: "100%",
     marginTop: "auto",
+  },
+  mainTitle: {
+    position: "absolute",
+    top: -21,
+    fontSize: 22,
+    fontWeight: "bold",
   },
   deleteButton: {
     borderColor: "red",
