@@ -78,3 +78,9 @@ export interface FormattedDate {
   hour: number;
   minutes: number;
 }
+
+export interface NewTaskNotification {
+  text: string;
+  title: string;
+  date: Date;
+}
