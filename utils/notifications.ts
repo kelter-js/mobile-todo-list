@@ -1,6 +1,7 @@
 import { Alert, Platform } from "react-native";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
+import { NewTaskNotification } from "../models";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -10,20 +11,28 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export async function schedulePushNotification(text: string, date: Date) {
+export async function schedulePushNotification({
+  text,
+  title,
+  date,
+}: NewTaskNotification) {
   Alert.alert(`reminder will fire at: ${date.toLocaleString()}`);
   const notificationId = await Notifications.scheduleNotificationAsync({
     content: {
-      title: `${text}`,
+      title: `${title}`,
       body: `${text}`,
       data: { data: `reminder will fire at: ${date.toLocaleString()}` },
     },
     trigger: date,
     identifier: "testIdentifier",
-  }).then((res) => {
-    Alert.alert("registered successfully!");
-    return res;
-  });
+  })
+    .then((res) => {
+      Alert.alert("registered successfully!");
+      return res;
+    })
+    .catch((err) => {
+      Alert.alert("failed to create notification!", err);
+    });
 
   return { notificationId, date };
 }
