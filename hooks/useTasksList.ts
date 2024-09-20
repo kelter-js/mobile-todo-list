@@ -6,7 +6,10 @@ import { ViewModes } from "../enums";
 import { ITask } from "../models";
 import useAppState from "./useAppState";
 import useInitiateTasks from "./useInitiateTasks";
-import { cancelScheduledNotification } from "../utils/notifications";
+import {
+  cancelScheduledNotification,
+  schedulePushNotification,
+} from "../utils/notifications";
 
 //we need to add sort to fns list
 const useTasksList = (
@@ -17,7 +20,19 @@ const useTasksList = (
   const [tasksList, setTasksList] = useState<ITask[]>([]);
   const [doneTasks, setDoneTasks] = useState<ITask[]>([]);
 
-  const createNewTask = (newTaskData: Omit<ITask, "id">) => {
+  const createNewTask = async (newTaskData: Omit<ITask, "id">) => {
+    //creating notification
+    const { notificationId } = await schedulePushNotification({
+      title: newTaskData.title,
+      date: newTaskData.triggerDate!,
+      text: newTaskData.description,
+    });
+
+    if (notificationId) {
+      //setting in new task data object notification identificator
+      newTaskData.taskIdentificatorId = notificationId;
+    }
+
     setTasksList((state) => [...state, { id: uuid.v1(), ...newTaskData }]);
   };
 
