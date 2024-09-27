@@ -14,9 +14,13 @@ import { Feather } from "@expo/vector-icons";
 import { INewTaskModalFormProps } from "../../models";
 import { DEFAULT_COLORS, getColorItem } from "../../utils/getColorItem";
 import DatePicker from "../DatePicker";
+import {
+  cancelScheduledNotification,
+  schedulePushNotification,
+} from "../../utils/notifications";
 
 //we need to extract all useState into one hook - like useForm
-const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task = {} }) => {
+const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task }) => {
   const [newTaskText, setNewTaskText] = useState(task?.description ?? "");
   const [newTaskTitle, setNewTaskTitle] = useState(task?.title ?? "");
   const [isRepeatableTask, setRepeatableTask] = useState(
@@ -34,25 +38,53 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task = {} }) => {
   const handleChangeColor = (newColor: string) => setSelectedColor(newColor);
 
   const isTaskEditMode = Boolean(
-    task?.description && task?.title && task?.triggerDate
+    task && task?.description && task?.title && task?.triggerDate
   );
 
   const handleDateSelection = useCallback((date: Date) => {
     setTriggerDate(date);
   }, []);
 
-  const handleCreateNewTask = () => {
+  const handleCreateNewTask = async () => {
     Keyboard.dismiss();
 
     if (triggerDate) {
-      onAdd({
+      const changedTaskData = {
         ...task,
         description: newTaskText,
         title: newTaskTitle,
         isRepeatable: isRepeatableTask,
-        triggerDate: isTaskEditMode ? task.triggerDate : triggerDate,
         taskColor: selectedColor ? selectedColor : undefined,
-      });
+      };
+
+      //if we edit task, and income task date diff with state trigger date, which means user change it - we need to delete notification subscription
+      if (
+        task &&
+        isTaskEditMode &&
+        task.triggerDate !== triggerDate &&
+        task.taskIdentificatorId
+      ) {
+        changedTaskData.triggerDate = triggerDate;
+        await cancelScheduledNotification(task.taskIdentificatorId!);
+
+        const { notificationId } = await schedulePushNotification({
+          title: task.title!,
+          date: triggerDate,
+          text: task.description!,
+        });
+
+        if (notificationId) {
+          changedTaskData.taskIdentificatorId = notificationId;
+        } else {
+          changedTaskData.taskIdentificatorId = undefined;
+        }
+      } else if (!isTaskEditMode) {
+        changedTaskData.triggerDate = triggerDate;
+      } else {
+        changedTaskData.triggerDate = task?.triggerDate;
+      }
+
+      onAdd(changedTaskData);
 
       setNewTaskText("");
       setNewTaskTitle("");

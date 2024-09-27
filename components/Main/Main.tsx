@@ -7,12 +7,13 @@ import {
   Keyboard,
   ImageBackground,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //other
-import { storeData } from "../../utils/storage";
 import { ITask } from "../../models";
-import { schedulePushNotification } from "../../utils/notifications";
+import {
+  cancelScheduledNotification,
+  schedulePushNotification,
+} from "../../utils/notifications";
 import getRandom from "../../utils/getRandom";
 
 //components
@@ -29,7 +30,6 @@ import useNotificationRegister from "../../hooks/useNotificationRegister";
 import useBackgroundImage from "../../hooks/useBackgroundImage";
 import useManageTask from "../../hooks/useManageTask";
 import useTasksList from "../../hooks/useTasksList";
-import useAppState from "../../hooks/useAppState";
 import useViewMode from "../../hooks/useViewMode";
 import { ConfirmDeletion } from "../ConfirmDeletion";
 
@@ -140,21 +140,26 @@ const Main = (): JSX.Element => {
     }
   }, [activeTask]);
 
-  const createNewNotification = async (
-    remindDate: Date,
-    taskId: string | Uint8Array
-  ) => {
-    const { date, notificationId } = await schedulePushNotification({
+  const createNewNotification = async (remindDate: Date, task: ITask) => {
+    const taskData = { ...task };
+
+    if (taskData.taskIdentificatorId) {
+      await cancelScheduledNotification(taskData.taskIdentificatorId);
+    }
+
+    const { notificationId } = await schedulePushNotification({
       title: activeTask,
       date: remindDate,
       text: activeTask,
     });
 
-    handleCloseModal();
+    if (notificationId) {
+      taskData.taskIdentificatorId = notificationId;
+    }
 
-    await storeData("taskTime", date.toString());
-    await storeData("notificationId", notificationId);
-    await storeData("taskId", taskId);
+    updateTask(taskData);
+
+    handleCloseModal();
   };
 
   // useEffect(() => {

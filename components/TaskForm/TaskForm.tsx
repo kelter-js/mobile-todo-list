@@ -76,8 +76,8 @@ const TaskForm: FC<TaskFormProps> = ({
                 styles.actionButton,
                 !isDateSelected && styles.buttonDisabled,
               ]}
-              disabled={!isDateSelected}
-              onPress={() => onCreateReminder(selectedDate, taskId)}
+              disabled={!isDateSelected || selectedDate === task?.triggerDate}
+              onPress={() => onCreateReminder(selectedDate, task)}
             >
               <Text style={styles.actionText}>
                 Set new date

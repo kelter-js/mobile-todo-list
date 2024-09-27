@@ -13,7 +13,11 @@ export interface TaskFormProps {
   onMoveTaskBack: VoidFunction;
   taskId: string;
   taskText?: string;
-  onCreateReminder: (date: Date, taskId: string | Uint8Array) => void;
+  onCreateReminder: (
+    date: Date,
+
+    task: ITask
+  ) => void;
   task: ITask;
 }
 
