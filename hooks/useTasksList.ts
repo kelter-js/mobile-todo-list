@@ -6,6 +6,8 @@ import { ViewModes } from "../enums";
 import { ITask } from "../models";
 import useAppState from "./useAppState";
 import useInitiateTasks from "./useInitiateTasks";
+import { SORT_DIRECTIONS } from "../entities/SortDirections";
+import { sortByDates } from "../utils/sortByDates";
 import {
   cancelScheduledNotification,
   schedulePushNotification,
@@ -19,6 +21,9 @@ const useTasksList = (
 ) => {
   const [tasksList, setTasksList] = useState<ITask[]>([]);
   const [doneTasks, setDoneTasks] = useState<ITask[]>([]);
+  const [sortDirection, setDirection] = useState<SORT_DIRECTIONS>(
+    SORT_DIRECTIONS.DESC
+  );
 
   const createNewTask = async (newTaskData: Omit<ITask, "id">) => {
     //creating notification
@@ -36,14 +41,26 @@ const useTasksList = (
     setTasksList((state) => [...state, { id: uuid.v1(), ...newTaskData }]);
   };
 
+  const handleChangeSortDirection = () => {
+    const newSortDirection =
+      sortDirection === SORT_DIRECTIONS.ASC
+        ? SORT_DIRECTIONS.DESC
+        : SORT_DIRECTIONS.ASC;
+
+    setDirection(newSortDirection);
+
+    setTasksList((state) => sortByDates(state, newSortDirection));
+    setDoneTasks((state) => sortByDates(state, newSortDirection));
+  };
+
   const { isAppVisible } = useAppState();
   const { isLoadingTasks, updateStorageTasks, getTasks } = useInitiateTasks();
 
   useEffect(() => {
     if (isAppVisible) {
       getTasks().then(({ parsedTasksList, repeatableTasksList }) => {
-        setTasksList(parsedTasksList);
-        setDoneTasks(repeatableTasksList);
+        setTasksList(sortByDates(parsedTasksList, sortDirection));
+        setDoneTasks(sortByDates(repeatableTasksList, sortDirection));
       });
     }
   }, [isAppVisible]);
@@ -178,9 +195,10 @@ const useTasksList = (
     markTaskAsUndone,
     tasksToView: isViewModeInProgress ? tasksList : doneTasks,
     activeTaskData,
-
     deleteTaskData,
     clearDoneTasks,
+    sortDirection,
+    handleChangeSortDirection,
   };
 };
 
