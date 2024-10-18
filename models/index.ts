@@ -13,11 +13,7 @@ export interface TaskFormProps {
   onMoveTaskBack: VoidFunction;
   taskId: string;
   taskText?: string;
-  onCreateReminder: (
-    date: Date,
-
-    task: ITask
-  ) => void;
+  onCreateReminder: (date: Date, task: ITask) => void;
   task: ITask;
 }
 
@@ -47,6 +43,7 @@ export interface ITask {
   triggerDate?: Date;
   taskColor?: string;
   taskIdentificatorId?: string;
+  createdAt?: Date;
 }
 
 export interface CustomCheckboxProps {

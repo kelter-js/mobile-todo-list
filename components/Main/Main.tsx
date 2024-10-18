@@ -55,10 +55,9 @@ const DELETION_MODAL_HEIGHT = 160;
 //we need to check that user selected new date, before we put task from done to task in progress
 //we need to add sort task list button for date in ASC and DESC orders
 
-//we need to remove scheduled notification if user delete or set task as done
+//we create new ui
 
-//we need to check when we change or create task, in callback we should set new notification
-//when change apply - check old trigger date and new trigger date, if they arent the same
+//maybe we should somehow dispatch ui updates to check if task is complete
 
 const Main = (): JSX.Element => {
   //initiate notification service
@@ -89,6 +88,8 @@ const Main = (): JSX.Element => {
     activeTaskData,
     deleteTaskData,
     clearDoneTasks,
+    sortDirection,
+    handleChangeSortDirection,
   } = useTasksList(isViewModeInProgress, activeTask, deleteTask);
 
   const handleCloseModal = useCallback(() => {
@@ -157,6 +158,8 @@ const Main = (): JSX.Element => {
       taskData.taskIdentificatorId = notificationId;
     }
 
+    taskData.createdAt = new Date();
+
     updateTask(taskData);
 
     handleCloseModal();
@@ -217,6 +220,8 @@ const Main = (): JSX.Element => {
           <TaskFilterButtons
             setViewMode={setViewMode}
             isViewModeInProgress={isViewModeInProgress}
+            sortDirection={sortDirection}
+            handleChangeSortDirection={handleChangeSortDirection}
           />
 
           <TaskList

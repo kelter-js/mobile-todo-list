@@ -64,6 +64,7 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task }) => {
         task.triggerDate !== triggerDate &&
         task.taskIdentificatorId
       ) {
+        changedTaskData.createdAt = new Date();
         changedTaskData.triggerDate = triggerDate;
         await cancelScheduledNotification(task.taskIdentificatorId!);
 
@@ -80,6 +81,7 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task }) => {
         }
       } else if (!isTaskEditMode) {
         changedTaskData.triggerDate = triggerDate;
+        changedTaskData.createdAt = new Date();
       } else {
         changedTaskData.triggerDate = task?.triggerDate;
       }
