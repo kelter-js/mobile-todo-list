@@ -48,6 +48,7 @@ const backgroundPaths = [
 
 const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
 const DELETION_MODAL_HEIGHT = 160;
+const MIN_AMOUNT_OF_TASKS_TO_SORT = 1;
 
 //todo: split states into one global and use reducer
 //we need to create reducers, too much logic layer app file containing
@@ -222,6 +223,7 @@ const Main = (): JSX.Element => {
             isViewModeInProgress={isViewModeInProgress}
             sortDirection={sortDirection}
             handleChangeSortDirection={handleChangeSortDirection}
+            hasSortButton={tasksToView.length > MIN_AMOUNT_OF_TASKS_TO_SORT}
           />
 
           <TaskList
