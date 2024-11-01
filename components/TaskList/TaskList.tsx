@@ -41,7 +41,7 @@ const TaskList: FC<ITaskListProps> = ({
 
 const styles = StyleSheet.create({
   listContainer: {
-    height: getPercentage(78, windowHeight),
+    height: getPercentage(79, windowHeight),
   },
   items: {
     marginTop: 10,

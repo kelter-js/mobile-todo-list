@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from "react";
+import { LinearGradient } from "react-native-svg";
 import {
   Text,
   View,
@@ -46,7 +47,7 @@ const backgroundPaths = [
   require("../../assets/background/nature-10.jpg"),
 ];
 
-const prefabImage = backgroundPaths[getRandom(0, backgroundPaths.length - 1)];
+const prefabImage = require("../../assets/background/static-bg.jpg");
 const DELETION_MODAL_HEIGHT = 160;
 const MIN_AMOUNT_OF_TASKS_TO_SORT = 1;
 
@@ -211,12 +212,12 @@ const Main = (): JSX.Element => {
       <ImageBackground
         resizeMode="cover"
         style={styles.backgroundImage}
-        source={currentImagePath || prefabImage}
+        source={prefabImage}
       />
 
       <View style={styles.contentContainer}>
         <View style={styles.tasksContainer}>
-          <Text style={styles.sectionTitle}>Today`s tasks</Text>
+          <Text style={styles.sectionTitle}>Задачи</Text>
 
           <TaskFilterButtons
             setViewMode={setViewMode}
@@ -295,12 +296,14 @@ const styles = StyleSheet.create({
   },
   tasksContainer: {
     flex: 1,
-    marginTop: 60,
+    marginTop: 15,
     marginHorizontal: 10,
   },
   sectionTitle: {
     fontSize: 24,
     fontWeight: "bold",
+    color: "#b6b7b8",
+    textAlign: "center",
   },
   backgroundImage: {
     position: "absolute",
