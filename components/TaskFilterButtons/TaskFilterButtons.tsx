@@ -1,17 +1,12 @@
 import { FC } from "react";
 import { Pressable, View, Text, StyleSheet } from "react-native";
+import Entypo from "@expo/vector-icons/Entypo";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { ViewModes } from "../../enums";
 import { SORT_DIRECTIONS } from "../../entities/SortDirections";
-
-interface TaskFilterButtonsProps {
-  isViewModeInProgress: boolean;
-  setViewMode: (viewMode: keyof typeof ViewModes) => void;
-  sortDirection: SORT_DIRECTIONS;
-  handleChangeSortDirection: VoidFunction;
-  hasSortButton: boolean;
-}
+import { TaskFilterButtonsProps } from "./types";
 
 const TaskFilterButtons: FC<TaskFilterButtonsProps> = ({
   isViewModeInProgress,
@@ -20,31 +15,27 @@ const TaskFilterButtons: FC<TaskFilterButtonsProps> = ({
   handleChangeSortDirection,
   hasSortButton,
 }) => {
-  const handleSetFinishedViewMode = () => setViewMode(ViewModes.FINISHED);
-  const handleSetInProgressViewMode = () => setViewMode(ViewModes.IN_PROGRESS);
+  const handleChangeViewMode = () => {
+    setViewMode(
+      isViewModeInProgress ? ViewModes.FINISHED : ViewModes.IN_PROGRESS
+    );
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.sortControlsContainer}>
-        <Pressable
-          style={[
-            styles.sortTasksButton,
-            isViewModeInProgress && styles.sortTasksButtonSelected,
-          ]}
-          onPress={handleSetInProgressViewMode}
-        >
-          <Text style={styles.sortTasksButtonText}>Future tasks</Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.sortTasksButton,
-            !isViewModeInProgress && styles.sortTasksButtonSelected,
-          ]}
-          onPress={handleSetFinishedViewMode}
-        >
-          <Text style={styles.sortTasksButtonText}>Finished tasks</Text>
-        </Pressable>
+        <View style={styles.content}>
+          <Pressable onPress={handleChangeViewMode} style={styles.icon}>
+            {isViewModeInProgress ? (
+              <Entypo name="check" size={16} color="white" />
+            ) : (
+              <AntDesign name="close" size={16} color="white" />
+            )}
+          </Pressable>
+          <Text style={styles.title}>
+            {isViewModeInProgress ? "Текущие задачи" : "Завершенные задачи"}
+          </Text>
+        </View>
       </View>
 
       {hasSortButton && (
@@ -70,6 +61,28 @@ const TaskFilterButtons: FC<TaskFilterButtonsProps> = ({
 };
 
 const styles = StyleSheet.create({
+  icon: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 35,
+    width: 35,
+    minHeight: 35,
+    backgroundColor: "#293238",
+    borderRadius: 35 / 2,
+  },
+  title: {
+    fontWeight: "bold",
+    fontSize: 16,
+    color: "#7d7f80",
+    marginTop: 10,
+  },
+  content: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   container: {
     flex: 1,
     flexDirection: "column",
@@ -112,19 +125,6 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     lineHeight: 50,
     transform: [{ scale: 0.9 }],
-  },
-  sortTasksButtonSelected: {
-    boxShadow: "#422800 -4px -4px 0 0",
-    fontWeight: "bold",
-    fontSize: 18,
-    transform: [{ scale: 1 }],
-  },
-  sortTasksButtonText: {
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: "bold",
-    letterSpacing: 0.25,
-    color: "black",
   },
 });
 
