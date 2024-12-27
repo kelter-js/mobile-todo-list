@@ -25,14 +25,16 @@ export interface ConfirmDeletionProps {
 }
 
 export interface INewTaskFormProps {
-  onAdd: (taskData: ITask) => void;
   onClear: VoidFunction;
   isViewModeInProgress?: boolean;
+
+  toggleTaskForm: VoidFunction;
 }
 
 export interface INewTaskModalFormProps {
   onAdd: (taskData: ITask) => void;
   task?: ITask;
+  onClose: VoidFunction;
 }
 
 export interface ITask {
