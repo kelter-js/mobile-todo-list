@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { LinearGradient } from "react-native-svg";
 import {
   Text,
@@ -21,7 +21,7 @@ import getRandom from "../../utils/getRandom";
 import TaskFilterButtons from "../TaskFilterButtons";
 import NewTaskModalForm from "../NewTaskModalForm";
 import NewTaskContainer from "../NewTaskContainer";
-import SplashScreen from "../SplashScreen";
+import SplashScreen from "../../view/SplashScreen";
 import TaskList from "../TaskList";
 import ModalWindow from "../Modal";
 import TaskForm from "../TaskForm";
@@ -33,6 +33,7 @@ import useManageTask from "../../hooks/useManageTask";
 import useTasksList from "../../hooks/useTasksList";
 import useViewMode from "../../hooks/useViewMode";
 import { ConfirmDeletion } from "../ConfirmDeletion";
+import { EditView } from "../../view/EditView";
 
 const backgroundPaths = [
   require("../../assets/background/nature-1.jpg"),
@@ -60,6 +61,10 @@ const MIN_AMOUNT_OF_TASKS_TO_SORT = 1;
 //we create new ui
 
 //maybe we should somehow dispatch ui updates to check if task is complete
+
+//selected by user time validation during editing task card - we should somehow inform user why button is disabled
+//if card has checkbox task is repeatable, instead of timepicker, we need to show him field like
+//повторять - пользователь выбирает от 0 до 60, затем каждые - и здесь сущность выбирает пользователь, минуты, часы, дни.
 
 const Main = (): JSX.Element => {
   //initiate notification service
@@ -93,6 +98,17 @@ const Main = (): JSX.Element => {
     sortDirection,
     handleChangeSortDirection,
   } = useTasksList(isViewModeInProgress, activeTask, deleteTask);
+
+  const [isTaskFormOpened, setTaskFormOpened] = useState(false);
+
+  const toggleTaskForm = useCallback(() => {
+    setTaskFormOpened((state) => !state);
+  }, []);
+
+  const handleTaskCreation = useCallback((data: Omit<ITask, "id">) => {
+    handleChangeTask(data);
+    setTaskFormOpened(false);
+  }, []);
 
   const handleCloseModal = useCallback(() => {
     setModalOpened(false);
@@ -204,6 +220,33 @@ const Main = (): JSX.Element => {
     return <SplashScreen />;
   }
 
+  const handleCloseTaskCreation = () => {
+    setTaskFormOpened(false);
+  };
+
+  if (isTaskFormOpened) {
+    return (
+      <EditView onClose={handleCloseTaskCreation}>
+        <NewTaskModalForm
+          onClose={handleCloseTaskCreation}
+          onAdd={handleTaskCreation}
+        />
+      </EditView>
+    );
+  }
+
+  if (isModalWindowOpened && isTaskEditMode) {
+    return (
+      <EditView onClose={handleResetOpenedTask}>
+        <NewTaskModalForm
+          onClose={handleResetOpenedTask}
+          onAdd={handleChangeTask}
+          task={activeTaskData}
+        />
+      </EditView>
+    );
+  }
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
@@ -266,16 +309,8 @@ const Main = (): JSX.Element => {
             />
           </ModalWindow>
 
-          {/* create new task */}
-          <ModalWindow
-            onCloseModal={handleResetOpenedTask}
-            isWindowOpened={isModalWindowOpened && isTaskEditMode}
-          >
-            <NewTaskModalForm onAdd={handleChangeTask} task={activeTaskData} />
-          </ModalWindow>
-
           <NewTaskContainer
-            onAdd={handleCreateNewTask}
+            toggleTaskForm={toggleTaskForm}
             onClear={clearDoneTasks}
             isViewModeInProgress={isViewModeInProgress}
           />

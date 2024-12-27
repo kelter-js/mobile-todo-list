@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from "react";
+import { FC } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -7,42 +7,21 @@ import {
   Pressable,
 } from "react-native";
 
-import { INewTaskFormProps, ITask } from "../../models";
-import ModalWindow from "../Modal";
-import NewTaskModalForm from "../NewTaskModalForm";
+import { INewTaskFormProps } from "../../models";
 
 const IOS_TYPE = "ios";
+const isPlatformIOS = Platform.OS === IOS_TYPE;
 
 const NewTaskForm: FC<INewTaskFormProps> = ({
-  onAdd,
   onClear,
   isViewModeInProgress,
+  toggleTaskForm,
 }) => {
-  const [isTaskFormOpened, setTaskFormOpened] = useState(false);
-
-  const isPlatformIOS = Platform.OS === IOS_TYPE;
-
-  const toggleTaskForm = useCallback(() => {
-    setTaskFormOpened((state) => !state);
-  }, []);
-
-  const handleTaskCreation = useCallback((data: Omit<ITask, "id">) => {
-    onAdd(data);
-    setTaskFormOpened(false);
-  }, []);
-
   return (
     <KeyboardAvoidingView
       behavior={isPlatformIOS ? "padding" : "height"}
       style={styles.writeTaskWrapper}
     >
-      <ModalWindow
-        onCloseModal={toggleTaskForm}
-        isWindowOpened={isTaskFormOpened}
-      >
-        <NewTaskModalForm onAdd={handleTaskCreation} />
-      </ModalWindow>
-
       <Pressable
         onPress={isViewModeInProgress ? toggleTaskForm : onClear}
         style={[

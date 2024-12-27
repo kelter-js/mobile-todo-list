@@ -12,6 +12,7 @@ import { IModalWindowProps } from "../../models";
 import { getPercentage } from "../../utils/getPercentage";
 
 const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 const DEFAULT_HEIGHT = 330;
 
 const ModalWindow: FC<IModalWindowProps> = ({

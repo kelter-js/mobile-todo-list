@@ -51,7 +51,7 @@ export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
             onPress={showTimepicker}
             style={styles.buttonContainer}
           >
-            <Ionicons name="timer" size={24} color="black" />
+            <Ionicons name="timer" size={24} color="white" />
           </TouchableOpacity>
         </View>
 
@@ -60,7 +60,7 @@ export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
             onPress={showDatepicker}
             style={styles.buttonContainer}
           >
-            <FontAwesome name="calendar" size={24} color="black" />
+            <FontAwesome name="calendar" size={24} color="white" />
           </TouchableOpacity>
         </View>
       </View>

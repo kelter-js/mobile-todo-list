@@ -18,9 +18,15 @@ import {
   cancelScheduledNotification,
   schedulePushNotification,
 } from "../../utils/notifications";
+import { ColorPicker } from "../ColorPicker";
+import { ScheduleSelection } from "../ScheduleSelection";
 
 //we need to extract all useState into one hook - like useForm
-const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task }) => {
+const NewTaskModalForm: FC<INewTaskModalFormProps> = ({
+  onAdd,
+  task,
+  onClose,
+}) => {
   const [newTaskText, setNewTaskText] = useState(task?.description ?? "");
   const [newTaskTitle, setNewTaskTitle] = useState(task?.title ?? "");
   const [isRepeatableTask, setRepeatableTask] = useState(
@@ -35,7 +41,9 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task }) => {
     getColorItem(task?.taskColor)
   );
 
-  const handleChangeColor = (newColor: string) => setSelectedColor(newColor);
+  const handleChangeColor = (newColor: string) => {
+    setSelectedColor(newColor === selectedColor ? "" : newColor);
+  };
 
   const isTaskEditMode = Boolean(
     task && task?.description && task?.title && task?.triggerDate
@@ -121,16 +129,10 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task }) => {
         value={newTaskText}
       />
 
-      <Picker
-        selectedValue={selectedColor}
-        onValueChange={handleChangeColor}
-        style={[styles.input, styles.titleInput]}
-        selectionColor="#28A745"
-      >
-        {DEFAULT_COLORS.map(({ label, value }) => (
-          <Picker.Item key={value} label={label} value={value} color={value} />
-        ))}
-      </Picker>
+      <ColorPicker
+        selectedColor={selectedColor}
+        onSelectColor={handleChangeColor}
+      />
 
       <View
         style={[
@@ -143,11 +145,13 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task }) => {
           onPress={toggleCheckbox}
           size={30}
           checkedIcon={<Feather name="check-circle" size={24} color="green" />}
-          uncheckedIcon={<Feather name="circle" size={24} color="black" />}
+          uncheckedIcon={<Feather name="circle" size={24} color="#293238" />}
           title="Is this task repeatable?"
+          containerStyle={styles.checkbox}
+          textStyle={styles.checkBoxTitle}
         />
 
-        {!isTaskEditMode && (
+        {!isRepeatableTask && (
           <DatePicker
             date={triggerDate ?? new Date()}
             setSelectedDate={handleDateSelection}
@@ -155,21 +159,59 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({ onAdd, task }) => {
         )}
       </View>
 
-      <Pressable
-        style={[styles.button, isTaskEmpty && styles.buttonDisabled]}
-        disabled={isTaskEmpty}
-        onPress={handleCreateNewTask}
-      >
-        <Text style={styles.newTaskText}>
-          {task ? "Save changes" : "Create new task"}
-        </Text>
-      </Pressable>
+      {isRepeatableTask && (
+        <View>
+          <ScheduleSelection
+            onSelectSchedule={() => undefined}
+            selectedScheduleType={{}}
+          />
+        </View>
+      )}
+
+      <View style={styles.controlsContainer}>
+        <Pressable
+          onPress={onClose}
+          style={[styles.button, styles.cancelButton]}
+        >
+          <Text style={styles.newTaskText}>Отмена</Text>
+        </Pressable>
+
+        <Pressable
+          style={[
+            styles.button,
+            isTaskEmpty && styles.buttonDisabled,
+            styles.confirmButton,
+          ]}
+          disabled={isTaskEmpty}
+          onPress={handleCreateNewTask}
+        >
+          <Text style={styles.newTaskText}>
+            {task ? "Сохранить" : "Добавить"}
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  title: { fontSize: 22, fontWeight: "bold" },
+  checkBoxTitle: {
+    color: "rgb(165, 166, 167)",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  controlsContainer: {
+    flex: 1,
+    gap: 12,
+    flexDirection: "row",
+    marginTop: "auto",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#ACAEAE",
+    textAlign: "center",
+  },
   checkboxContainer: {
     display: "flex",
     flexDirection: "row",
@@ -184,11 +226,16 @@ const styles = StyleSheet.create({
   mainContainer: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "flex-start",
-    marginLeft: -15,
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingRight: 8,
   },
   checkbox: {
-    margin: 8,
+    backgroundColor: "transparent",
+    margin: 0,
+    marginLeft: 0,
+    marginRight: 0,
+    paddingLeft: 0,
   },
   buttonDisabled: {
     opacity: 0.3,
@@ -201,13 +248,21 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     height: "100%",
     width: "100%",
+    paddingTop: 16,
+    paddingBottom: 32,
   },
   button: {
     marginTop: "auto",
-    borderRadius: 20,
+    borderRadius: 9,
     padding: 10,
-    marginBottom: 22,
+    height: 43,
+    width: "48%",
     elevation: 2,
+  },
+  cancelButton: {
+    backgroundColor: "#293238",
+  },
+  confirmButton: {
     backgroundColor: "#2196F3",
   },
   newTaskText: {
@@ -219,11 +274,10 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 15,
     marginTop: 10,
-    marginBottom: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "#293238",
+    border: "unset",
     borderRadius: 5,
-    borderColor: "#c0c0c0",
-    borderWidth: 1,
+    color: "#ACAEAE",
     height: 51,
   },
   titleInput: {
