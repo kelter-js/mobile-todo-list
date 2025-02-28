@@ -23,12 +23,11 @@ export const tasksService = {
     tasksList: ITask[],
     doneTasks: ITask[]
   ) {
-    const taskIndex = doneTasks.indexOf(changedTask);
-    const updatedDoneTasks = [...doneTasks, changedTask];
-    const updatedTasksList = [
-      ...tasksList.slice(0, taskIndex),
-      ...tasksList.slice(taskIndex + 1),
-    ];
+    const updatedDoneTasks = doneTasks.filter(
+      (task) => task.id !== changedTask.id
+    );
+
+    const updatedTasksList = [...tasksList, changedTask];
 
     return {
       updatedDoneTasks,
