@@ -16,6 +16,7 @@ const NewTaskForm: FC<INewTaskFormProps> = ({
   onClear,
   isViewModeInProgress,
   toggleTaskForm,
+  disabled,
 }) => {
   return (
     <KeyboardAvoidingView
@@ -24,15 +25,12 @@ const NewTaskForm: FC<INewTaskFormProps> = ({
     >
       <Pressable
         onPress={isViewModeInProgress ? toggleTaskForm : onClear}
-        style={[
-          styles.addWrapper,
-          !isViewModeInProgress && styles.removeContainer,
-        ]}
+        style={[styles.addWrapper, disabled && styles.diabled]}
       >
         <Text
           style={[isViewModeInProgress ? styles.addText : styles.removeText]}
         >
-          {isViewModeInProgress ? "+" : "Clear list"}
+          {isViewModeInProgress ? "+" : "Clear"}
         </Text>
       </Pressable>
     </KeyboardAvoidingView>
@@ -43,31 +41,27 @@ const styles = StyleSheet.create({
   writeTaskWrapper: {
     flex: 1,
     position: "absolute",
-    bottom: 60,
+    bottom: 25,
     left: 10,
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 60,
+    borderRadius: 12,
   },
   addWrapper: {
     position: "relative",
     minHeight: 60,
     minWidth: 60,
     width: "auto",
-    backgroundColor: "rgb(251, 238, 224)",
-    borderRadius: 60,
+    backgroundColor: "#1e93e0",
+    borderRadius: 12,
     marginLeft: "auto",
     marginRight: 25,
     justifyContent: "center",
     alignItems: "center",
-    borderColor: "#c0c0c0",
-    borderWidth: 1,
   },
-  removeContainer: {
-    width: 150,
-  },
-  addWrapperDisabled: {
+
+  diabled: {
     opacity: 0.3,
   },
   addText: {
@@ -75,10 +69,12 @@ const styles = StyleSheet.create({
     top: "-15%",
     left: "25%",
     fontSize: 50,
+    color: "white",
   },
   removeText: {
-    fontSize: 30,
+    fontSize: 20,
     fontWeight: "bold",
+    color: "white",
   },
 });
 
