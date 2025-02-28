@@ -1,4 +1,5 @@
 import { GestureResponderEvent } from "react-native";
+import { SCHEDULE_TYPES } from "../components/ScheduleSelection/constants";
 
 export interface IModalWindowProps {
   onCloseModal: VoidFunction;
@@ -27,7 +28,7 @@ export interface ConfirmDeletionProps {
 export interface INewTaskFormProps {
   onClear: VoidFunction;
   isViewModeInProgress?: boolean;
-
+  disabled: boolean;
   toggleTaskForm: VoidFunction;
 }
 
@@ -46,6 +47,9 @@ export interface ITask {
   taskColor?: string;
   taskIdentificatorId?: string;
   createdAt?: Date;
+  isAutoPlanning?: boolean;
+  repeatType?: SCHEDULE_TYPES;
+  repeatFrequency?: number;
 }
 
 export interface CustomCheckboxProps {
@@ -59,6 +63,7 @@ export interface ITaskProps extends ITask {
   onDelete: (id: string) => void;
   id: string | Uint8Array;
   isNotConfigurable: boolean;
+  isLastTask: boolean;
 }
 
 export interface ITaskListProps {
