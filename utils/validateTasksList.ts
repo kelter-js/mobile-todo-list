@@ -27,7 +27,10 @@ const validateTasksList = (incomingTasks: ITask[]) => {
   });
 
   return {
-    count: parsedTasksList.length + repeatableTasksList.length,
+    count:
+      parsedTasksList.length +
+      repeatableTasksList.length +
+      replanableTasksList.length,
     parsedTasksList,
     repeatableTasksList,
     replanableTasksList,
