@@ -1,36 +1,41 @@
-import { Picker } from "@react-native-picker/picker";
 import { FC } from "react";
+import { Picker } from "@react-native-picker/picker";
 import { View, Text, StyleSheet } from "react-native";
 import { ScheduleSelectionProps } from "./types";
+import { INTERVAL_TYPE_RANGES, INTERVAL_TYPES } from "./constants";
 
 export const ScheduleSelection: FC<ScheduleSelectionProps> = ({
   onSelectSchedule,
   selectedScheduleType,
+  selectedScheduleFrequency,
+  onSelectFrequency,
 }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Отображать напоминания каждые:</Text>
-      {/* <Picker
+      <Text style={styles.text}>Отображать напоминания каждые несколько:</Text>
+      <Picker
         selectedValue={selectedScheduleType}
         onValueChange={onSelectSchedule}
         style={[styles.input, styles.titleInput]}
         selectionColor="#28A745"
       >
-        {DEFAULT_COLORS.map(({ label, value }) => (
-          <Picker.Item key={value} label={label} value={value} color={value} />
+        {INTERVAL_TYPES.map((type) => (
+          <Picker.Item key={type} label={type} value={type} />
         ))}
-      </Picker> */}
+      </Picker>
       <Text style={styles.text}>С периодичностью в:</Text>
-      {/* <Picker
-        selectedValue={selectedScheduleType}
-        onValueChange={onSelectSchedule}
+      <Picker
+        selectedValue={selectedScheduleFrequency}
+        onValueChange={onSelectFrequency}
         style={[styles.input, styles.titleInput]}
         selectionColor="#28A745"
       >
-        {DEFAULT_COLORS.map(({ label, value }) => (
-          <Picker.Item key={value} label={label} value={value} color={value} />
-        ))}
-      </Picker> */}
+        {INTERVAL_TYPE_RANGES[INTERVAL_TYPES.indexOf(selectedScheduleType)].map(
+          (value) => (
+            <Picker.Item key={value} label={String(value)} value={value} />
+          )
+        )}
+      </Picker>
     </View>
   );
 };
@@ -43,7 +48,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginTop: 10,
     marginBottom: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "#293238",
+    color: "rgb(165, 166, 167)",
     borderRadius: 5,
     borderColor: "#c0c0c0",
     borderWidth: 1,
