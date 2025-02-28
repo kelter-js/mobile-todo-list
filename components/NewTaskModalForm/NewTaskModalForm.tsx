@@ -21,6 +21,12 @@ import {
 import { ColorPicker } from "../ColorPicker";
 import { ScheduleSelection } from "../ScheduleSelection";
 
+import {
+  generateNextTimer,
+  MIN_SCHEDULE_INTERVAL,
+  SCHEDULE_TYPES,
+} from "../ScheduleSelection/constants";
+
 //we need to extract all useState into one hook - like useForm
 const NewTaskModalForm: FC<INewTaskModalFormProps> = ({
   onAdd,
@@ -32,14 +38,33 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({
   const [isRepeatableTask, setRepeatableTask] = useState(
     task?.isRepeatable ?? false
   );
+  const [isAutoPlanning, setIsAutoPlanning] = useState(
+    task?.isAutoPlanning ?? false
+  );
 
   const [triggerDate, setTriggerDate] = useState<Date | null>(
-    task?.triggerDate ?? null
+    task?.triggerDate ?? new Date()
   );
 
   const [selectedColor, setSelectedColor] = useState<string | undefined>(
     getColorItem(task?.taskColor)
   );
+
+  const [scheduleType, setScheduleType] = useState<SCHEDULE_TYPES>(
+    SCHEDULE_TYPES.MINUTES
+  );
+  const [scheduleFrequency, setScheduleFrequency] = useState(
+    MIN_SCHEDULE_INTERVAL[SCHEDULE_TYPES.MINUTES]
+  );
+
+  const handleChangeScheduleType = (newType: SCHEDULE_TYPES) => {
+    setScheduleType(newType);
+    setScheduleFrequency(MIN_SCHEDULE_INTERVAL[newType]);
+  };
+
+  const handleChangeScheduleFrequency = (newFrenquency: number) => {
+    setScheduleFrequency(newFrenquency);
+  };
 
   const handleChangeColor = (newColor: string) => {
     setSelectedColor(newColor === selectedColor ? "" : newColor);
@@ -63,6 +88,8 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({
         title: newTaskTitle,
         isRepeatable: isRepeatableTask,
         taskColor: selectedColor ? selectedColor : undefined,
+        repeatType: scheduleType,
+        repeatFrequency: scheduleFrequency,
       };
 
       //if we edit task, and income task date diff with state trigger date, which means user change it - we need to delete notification subscription
@@ -105,6 +132,11 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({
 
   const toggleCheckbox = () => {
     setRepeatableTask((state) => !state);
+    setIsAutoPlanning(false);
+  };
+  const toggleAutoPlanning = () => {
+    setIsAutoPlanning((state) => !state);
+    setRepeatableTask(false);
   };
 
   const isTaskEmpty = !Boolean(newTaskTitle && newTaskText && triggerDate);
@@ -116,17 +148,18 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({
       </Text>
 
       <TextInput
-        style={styles.input}
-        placeholder="Task description"
-        onChangeText={setNewTaskTitle}
-        value={newTaskTitle}
-      />
-
-      <TextInput
         style={[styles.input, styles.titleInput]}
         placeholder="Task title"
         onChangeText={setNewTaskText}
         value={newTaskText}
+        multiline={true}
+      />
+
+      <TextInput
+        style={[styles.input, styles.descriptionInput]}
+        placeholder="Task description"
+        onChangeText={setNewTaskTitle}
+        value={newTaskTitle}
       />
 
       <ColorPicker
@@ -151,7 +184,7 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({
           textStyle={styles.checkBoxTitle}
         />
 
-        {!isRepeatableTask && (
+        {!isAutoPlanning && (
           <DatePicker
             date={triggerDate ?? new Date()}
             setSelectedDate={handleDateSelection}
@@ -159,11 +192,31 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({
         )}
       </View>
 
-      {isRepeatableTask && (
+      <View
+        style={[
+          styles.mainContainer,
+          !isTaskEditMode && styles.datePickerContainer,
+        ]}
+      >
+        <CheckBox
+          checked={isAutoPlanning}
+          onPress={toggleAutoPlanning}
+          size={30}
+          checkedIcon={<Feather name="check-circle" size={24} color="green" />}
+          uncheckedIcon={<Feather name="circle" size={24} color="#293238" />}
+          title="Is this task should be auto planned?"
+          containerStyle={styles.checkbox}
+          textStyle={styles.checkBoxTitle}
+        />
+      </View>
+
+      {isAutoPlanning && (
         <View>
           <ScheduleSelection
-            onSelectSchedule={() => undefined}
-            selectedScheduleType={{}}
+            onSelectSchedule={handleChangeScheduleType}
+            selectedScheduleType={scheduleType}
+            selectedScheduleFrequency={scheduleFrequency}
+            onSelectFrequency={handleChangeScheduleFrequency}
           />
         </View>
       )}
@@ -205,6 +258,7 @@ const styles = StyleSheet.create({
     gap: 12,
     flexDirection: "row",
     marginTop: "auto",
+    paddingTop: 25,
   },
   title: {
     fontSize: 20,
@@ -213,20 +267,20 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   checkboxContainer: {
-    display: "flex",
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
   },
   datePickerContainer: {
-    display: "flex",
+    flex: 1,
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "flex-start",
     alignItems: "center",
   },
   mainContainer: {
-    display: "flex",
+    flex: 1,
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     alignItems: "center",
     paddingRight: 8,
   },
@@ -244,7 +298,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   taskContainer: {
-    display: "flex",
+    flex: 1,
     flexDirection: "column",
     height: "100%",
     width: "100%",
@@ -282,6 +336,10 @@ const styles = StyleSheet.create({
   },
   titleInput: {
     marginBottom: 0,
+  },
+  descriptionInput: {
+    height: 136,
+    textAlignVertical: "top",
   },
 });
 
