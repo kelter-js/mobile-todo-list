@@ -51,7 +51,7 @@ const TaskFilterButtons: FC<TaskFilterButtonsProps> = ({
                   : "sort-clock-ascending"
               }
               size={24}
-              color="black"
+              color="rgb(165, 166, 167)"
             />
           </Pressable>
         </View>
@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     maxHeight: 119,
+    minHeight: 119,
   },
   sortControlsContainer: {
     maxHeight: 45,
@@ -103,9 +104,8 @@ const styles = StyleSheet.create({
   },
   sortTasksButtonByTime: {
     width: 50,
-    backgroundColor: "#fbeee0",
-    border: "2px solid #422800",
-    borderRadius: 30,
+    border: "2px solid #293238",
+    borderRadius: 12,
     color: "#422800",
     fontWeight: "400",
     fontSize: 16,

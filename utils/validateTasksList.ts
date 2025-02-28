@@ -4,9 +4,15 @@ import { ITask } from "../models";
 const validateTasksList = (incomingTasks: ITask[]) => {
   const parsedTasksList: ITask[] = [];
   const repeatableTasksList: ITask[] = [];
+  const replanableTasksList: ITask[] = [];
 
   incomingTasks.forEach((currentTask) => {
     const isExpired = isTaskExpired(currentTask.triggerDate!);
+
+    if (isExpired && currentTask.isAutoPlanning) {
+      replanableTasksList.push(currentTask);
+      return;
+    }
 
     if (isExpired && currentTask.isRepeatable) {
       repeatableTasksList.push(currentTask);
@@ -24,6 +30,7 @@ const validateTasksList = (incomingTasks: ITask[]) => {
     count: parsedTasksList.length + repeatableTasksList.length,
     parsedTasksList,
     repeatableTasksList,
+    replanableTasksList,
   };
 };
 

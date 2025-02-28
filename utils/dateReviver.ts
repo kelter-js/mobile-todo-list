@@ -5,9 +5,7 @@ const dateReviver = (_: string, value: string) => {
   ) {
     const date = new Date(value);
 
-    if (+date === +date) {
-      return date;
-    }
+    return date;
   }
 
   return value;

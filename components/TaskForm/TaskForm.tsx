@@ -36,9 +36,7 @@ const TaskForm: FC<TaskFormProps> = ({
   isViewModeInProgress,
   task,
 }) => {
-  const [selectedDate, setSelectedDate] = useState<Date>(
-    task?.triggerDate ?? new Date()
-  );
+  const [selectedDate, setSelectedDate] = useState<Date>(task?.triggerDate!);
   const [isDateSelected, setDateSelected] = useState(false);
 
   const handleDateSelection = useCallback((date: Date) => {
@@ -52,7 +50,7 @@ const TaskForm: FC<TaskFormProps> = ({
 
   return (
     <>
-      <DateDisplay date={selectedDate} />
+      <DateDisplay date={task?.triggerDate!} />
 
       <View style={styles.controlsContainer}>
         <Pressable
@@ -68,7 +66,7 @@ const TaskForm: FC<TaskFormProps> = ({
           </Text>
         </Pressable>
 
-        {isViewModeInProgress && isDateSelected && (
+        {isDateSelected && (
           <TouchableOpacity disabled={!isDateSelected}>
             <Pressable
               style={[
@@ -89,7 +87,12 @@ const TaskForm: FC<TaskFormProps> = ({
 
         {!isViewModeInProgress && (
           <Pressable
-            style={[styles.button, styles.actionButton]}
+            style={[
+              styles.button,
+              styles.actionButton,
+              !isDateSelected && styles.buttonDisabled,
+            ]}
+            disabled={!isDateSelected}
             onPress={onMoveTaskBack}
           >
             <Text style={styles.actionText}>
@@ -106,7 +109,7 @@ const TaskForm: FC<TaskFormProps> = ({
         {isViewModeInProgress && (
           <DatePicker
             setSelectedDate={handleDateSelection}
-            date={selectedDate}
+            date={selectedDate ?? new Date()}
           />
         )}
       </View>
@@ -116,7 +119,7 @@ const TaskForm: FC<TaskFormProps> = ({
 
 const styles = StyleSheet.create({
   controlsContainer: {
-    display: "flex",
+    flex: 1,
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -149,7 +152,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   actionText: {
-    display: "flex",
+    flex: 1,
     alignItems: "center",
     gap: 4,
     color: "black",
