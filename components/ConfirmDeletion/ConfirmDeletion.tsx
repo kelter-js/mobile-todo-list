@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   controlTextWrapper: {
-    display: "flex",
+    flex: 1,
     alignItems: "center",
     gap: 4,
     color: "black",

@@ -51,7 +51,7 @@ export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
             onPress={showTimepicker}
             style={styles.buttonContainer}
           >
-            <Ionicons name="timer" size={24} color="white" />
+            <Ionicons name="timer" size={24} color="rgb(165, 166, 167)" />
           </TouchableOpacity>
         </View>
 
@@ -60,7 +60,7 @@ export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
             onPress={showDatepicker}
             style={styles.buttonContainer}
           >
-            <FontAwesome name="calendar" size={24} color="white" />
+            <FontAwesome name="calendar" size={24} color="rgb(165, 166, 167)" />
           </TouchableOpacity>
         </View>
       </View>
@@ -80,13 +80,13 @@ export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    display: "flex",
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
   },
   buttonsMainContainer: {
-    display: "flex",
+    flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     height: 36,
@@ -96,13 +96,13 @@ const styles = StyleSheet.create({
     marginRight: 7,
   },
   initiateDateSelectionButton: {
-    display: "flex",
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     width: "50%",
     borderRadius: 12,
-    borderColor: "grey",
+    borderColor: "#293238",
     borderWidth: 1,
   },
   currentlySelectedDate: {

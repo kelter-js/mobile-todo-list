@@ -7,6 +7,7 @@ import {
   ScrollView,
   Keyboard,
   ImageBackground,
+  Dimensions,
 } from "react-native";
 
 //other
@@ -34,6 +35,7 @@ import useTasksList from "../../hooks/useTasksList";
 import useViewMode from "../../hooks/useViewMode";
 import { ConfirmDeletion } from "../ConfirmDeletion";
 import { EditView } from "../../view/EditView";
+import { reScheduleTasks } from "../../hooks/useInitiateTasks";
 
 const backgroundPaths = [
   require("../../assets/background/nature-1.jpg"),
@@ -51,6 +53,7 @@ const backgroundPaths = [
 const prefabImage = require("../../assets/background/static-bg.jpg");
 const DELETION_MODAL_HEIGHT = 160;
 const MIN_AMOUNT_OF_TASKS_TO_SORT = 1;
+const windowHeight = Dimensions.get("window").height;
 
 //todo: split states into one global and use reducer
 //we need to create reducers, too much logic layer app file containing
@@ -66,13 +69,17 @@ const MIN_AMOUNT_OF_TASKS_TO_SORT = 1;
 //if card has checkbox task is repeatable, instead of timepicker, we need to show him field like
 //повторять - пользователь выбирает от 0 до 60, затем каждые - и здесь сущность выбирает пользователь, минуты, часы, дни.
 
+// нужно реализовать логику в которой если таска повторяемая, как только отрабатывае тнапоминание - мы тут же создаем новое исходя из настроек таски
+
 const Main = (): JSX.Element => {
   //initiate notification service
-  const { expoPushToken, notification } = useNotificationRegister();
+  const { expoPushToken, notifications, setNotifications } =
+    useNotificationRegister();
 
   const { currentImagePath } = useBackgroundImage(backgroundPaths);
 
   const { viewMode, setViewMode, isViewModeInProgress } = useViewMode();
+  console.log("isViewModeInProgress", isViewModeInProgress);
   const {
     isModalWindowOpened,
     isTaskEditMode,
@@ -84,12 +91,15 @@ const Main = (): JSX.Element => {
     setDeleteTask,
   } = useManageTask();
 
+  console.log("activetask", activeTask);
+
   const {
     isLoadingTasks,
     createNewTask,
     updateTask,
+    doneTasks,
+    tasksList,
     removeTask,
-
     markTaskAsUndone,
     tasksToView,
     activeTaskData,
@@ -97,7 +107,26 @@ const Main = (): JSX.Element => {
     clearDoneTasks,
     sortDirection,
     handleChangeSortDirection,
+    setTasksList,
   } = useTasksList(isViewModeInProgress, activeTask, deleteTask);
+
+  console.log("tasksToView", tasksToView);
+
+  useEffect(() => {
+    if (notifications.length !== 0) {
+      const notificationsIds = notifications.map(
+        (notification) => notification.request.identifier
+      );
+      const tasksToReplan = [...doneTasks, ...tasksList].filter(
+        (task) =>
+          task.taskIdentificatorId &&
+          notificationsIds.includes(task.taskIdentificatorId)
+      );
+
+      reScheduleTasks(tasksToReplan, setTasksList, tasksList);
+      setNotifications([]);
+    }
+  }, [notifications]);
 
   const [isTaskFormOpened, setTaskFormOpened] = useState(false);
 
@@ -106,7 +135,7 @@ const Main = (): JSX.Element => {
   }, []);
 
   const handleTaskCreation = useCallback((data: Omit<ITask, "id">) => {
-    handleChangeTask(data);
+    handleCreateNewTask(data);
     setTaskFormOpened(false);
   }, []);
 
@@ -143,6 +172,7 @@ const Main = (): JSX.Element => {
   const handleCreateNewTask = (taskData: Omit<ITask, "id">) => {
     Keyboard.dismiss();
     createNewTask(taskData);
+    handleResetOpenedTask();
   };
 
   const handleChangeTask = (taskData: ITask) => {
@@ -248,9 +278,13 @@ const Main = (): JSX.Element => {
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="handled"
+    <View
+      style={{
+        flex: 1,
+        height: windowHeight,
+        maxHeight: windowHeight,
+        overflow: "hidden",
+      }}
     >
       <ImageBackground
         resizeMode="cover"
@@ -258,18 +292,20 @@ const Main = (): JSX.Element => {
         source={prefabImage}
       />
 
-      <View style={styles.contentContainer}>
-        <View style={styles.tasksContainer}>
-          <Text style={styles.sectionTitle}>Задачи</Text>
+      <View style={styles.tasksContainer}>
+        <Text style={styles.sectionTitle}>Задачи</Text>
 
-          <TaskFilterButtons
-            setViewMode={setViewMode}
-            isViewModeInProgress={isViewModeInProgress}
-            sortDirection={sortDirection}
-            handleChangeSortDirection={handleChangeSortDirection}
-            hasSortButton={tasksToView.length > MIN_AMOUNT_OF_TASKS_TO_SORT}
-          />
-
+        <TaskFilterButtons
+          setViewMode={setViewMode}
+          isViewModeInProgress={isViewModeInProgress}
+          sortDirection={sortDirection}
+          handleChangeSortDirection={handleChangeSortDirection}
+          hasSortButton={tasksToView.length > MIN_AMOUNT_OF_TASKS_TO_SORT}
+        />
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
           <TaskList
             tasks={tasksToView}
             onTaskOpen={handleTaskOpen}
@@ -277,46 +313,45 @@ const Main = (): JSX.Element => {
             isViewModeInProgress={isViewModeInProgress}
             onTaskDelete={handleDeleteTask}
           />
+        </ScrollView>
 
-          {/* view task card */}
-          <ModalWindow
-            onCloseModal={handleResetOpenedTask}
-            isWindowOpened={
-              isModalWindowOpened && !isTaskEditMode && !deleteTask
-            }
-          >
-            <TaskForm
-              taskId={String(activeTask)}
-              onRemoveTask={handleRemoveTask}
-              onMoveTaskBack={handleMoveTaskBack}
-              onCreateReminder={createNewNotification}
-              isViewModeInProgress={isViewModeInProgress}
-              task={activeTaskData}
-            />
-          </ModalWindow>
-
-          {/* delete task */}
-          <ModalWindow
-            onCloseModal={handleCloseDeletionModal}
-            isWindowOpened={Boolean(isModalWindowOpened && deleteTask)}
-            height={DELETION_MODAL_HEIGHT}
-          >
-            <ConfirmDeletion
-              taskId={String(deleteTask)}
-              onRemoveTask={handleRemoveTask}
-              task={deleteTaskData}
-              onClose={handleCloseDeletionModal}
-            />
-          </ModalWindow>
-
-          <NewTaskContainer
-            toggleTaskForm={toggleTaskForm}
-            onClear={clearDoneTasks}
+        {/* view task card */}
+        <ModalWindow
+          onCloseModal={handleResetOpenedTask}
+          isWindowOpened={isModalWindowOpened && !isTaskEditMode && !deleteTask}
+        >
+          <TaskForm
+            taskId={String(activeTask)}
+            onRemoveTask={handleRemoveTask}
+            onMoveTaskBack={handleMoveTaskBack}
+            onCreateReminder={createNewNotification}
             isViewModeInProgress={isViewModeInProgress}
+            task={activeTaskData}
           />
-        </View>
+        </ModalWindow>
+
+        {/* delete task */}
+        <ModalWindow
+          onCloseModal={handleCloseDeletionModal}
+          isWindowOpened={Boolean(isModalWindowOpened && deleteTask)}
+          height={DELETION_MODAL_HEIGHT}
+        >
+          <ConfirmDeletion
+            taskId={String(deleteTask)}
+            onRemoveTask={handleRemoveTask}
+            task={deleteTaskData}
+            onClose={handleCloseDeletionModal}
+          />
+        </ModalWindow>
       </View>
-    </ScrollView>
+
+      <NewTaskContainer
+        toggleTaskForm={toggleTaskForm}
+        onClear={clearDoneTasks}
+        disabled={!isViewModeInProgress && tasksToView.length === 0}
+        isViewModeInProgress={isViewModeInProgress}
+      />
+    </View>
   );
 };
 
@@ -324,15 +359,13 @@ const styles = StyleSheet.create({
   container: {
     position: "relative",
     flex: 1,
+    height: windowHeight,
   },
-  contentContainer: {
-    position: "relative",
-    flex: 1,
-  },
+
   tasksContainer: {
-    flex: 1,
     marginTop: 15,
     marginHorizontal: 10,
+    height: "100%",
   },
   sectionTitle: {
     fontSize: 24,
