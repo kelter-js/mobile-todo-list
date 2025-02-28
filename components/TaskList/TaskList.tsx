@@ -15,7 +15,7 @@ const TaskList: FC<ITaskListProps> = ({
   onTaskDelete,
 }) => {
   const renderList = useMemo(() => {
-    return tasks.map((task) => {
+    return tasks.map((task, index, self) => {
       const taskId = task.id ? task.id.toString() : "";
 
       return (
@@ -26,6 +26,7 @@ const TaskList: FC<ITaskListProps> = ({
           onConfigure={onTaskConfigure}
           isNotConfigurable={isViewModeInProgress}
           onDelete={onTaskDelete}
+          isLastTask={index === self.length - 1}
           {...task}
         />
       );
@@ -34,14 +35,17 @@ const TaskList: FC<ITaskListProps> = ({
 
   return (
     <View style={styles.listContainer}>
-      <ScrollView style={styles.items}>{renderList}</ScrollView>
+      <ScrollView style={styles.items}>
+        {renderList}
+        <View style={{ height: 110 }} />
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   listContainer: {
-    height: getPercentage(79, windowHeight),
+    height: "100%",
   },
   items: {
     marginTop: 10,
