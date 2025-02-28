@@ -6,6 +6,7 @@ import { getShortReviewDate } from "../../utils/getShortReviewDate";
 import { DEFAULT_COLOR } from "../../utils/getColorItem";
 import { ITaskProps } from "../../models";
 import { getPercentageDiffBetweenDates } from "../../utils/getPercentageDiffBetweenDates";
+import { getReadableDateDiff } from "../../utils/getReadableDateDiff";
 
 const Task: FC<ITaskProps> = ({
   description,
@@ -19,6 +20,7 @@ const Task: FC<ITaskProps> = ({
   triggerDate,
   onDelete,
   createdAt,
+  isLastTask,
 }) => {
   const handleOpening = () => {
     onOpen(String(id));
@@ -40,7 +42,13 @@ const Task: FC<ITaskProps> = ({
   return (
     <TouchableOpacity onPress={handleOpening}>
       <View
-        style={[styles.item, { backgroundColor: taskColor ?? DEFAULT_COLOR }]}
+        style={[
+          styles.item,
+          {
+            marginBottom: isLastTask ? 0 : 20,
+            backgroundColor: "rgba(61, 74, 82, 0.3)",
+          },
+        ]}
       >
         <View style={styles.itemLeft}>
           <View style={styles.taskContainer}>
@@ -71,7 +79,11 @@ const Task: FC<ITaskProps> = ({
             onPress={handleDeletion}
             style={{ marginBottom: 2 }}
           >
-            <MaterialCommunityIcons name="delete" size={24} color="black" />
+            <MaterialCommunityIcons
+              name="delete"
+              size={24}
+              color="rgb(165, 166, 167)"
+            />
           </TouchableOpacity>
 
           {isNotConfigurable && (
@@ -86,27 +98,103 @@ const Task: FC<ITaskProps> = ({
                 <MaterialCommunityIcons
                   name="calendar-edit"
                   size={24}
-                  color="black"
+                  color="rgb(165, 166, 167)"
                 />
               </TouchableOpacity>
             </View>
           )}
 
           {isRepeatable ? (
-            <MaterialCommunityIcons name="repeat" size={24} color="black" />
+            <MaterialCommunityIcons
+              name="repeat"
+              size={24}
+              color="rgb(165, 166, 167)"
+            />
           ) : (
-            <MaterialCommunityIcons name="repeat-off" size={24} color="black" />
+            <MaterialCommunityIcons
+              name="repeat-off"
+              size={24}
+              color="rgb(165, 166, 167)"
+            />
           )}
         </View>
 
-        <View style={styles.progressBar}>
+        <View
+          style={{
+            minWidth: "100%",
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "flex-start",
+          }}
+        >
+          <Text style={styles.mark}>Метка: </Text>
           <View
-            style={[
-              styles.progressBarFiller,
-              { width: `${completePercentage}%` },
-            ]}
+            style={{
+              //определяем выбранный прежде цвет, переделать на label: и элемент с бэкграундом цвета, 20 на 20 px
+              backgroundColor: taskColor ?? DEFAULT_COLOR,
+              height: 20,
+              width: 40,
+              marginLeft: 8,
+              marginTop: 2,
+            }}
           />
         </View>
+
+        {isNotConfigurable && (
+          <View
+            style={{
+              width: "100%",
+              marginTop: 8,
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "space-between",
+                flexDirection: "row",
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: "600",
+                  fontSize: 16,
+                  color: "#949697",
+                }}
+              >
+                Прогресс:
+              </Text>
+              <Text
+                style={{
+                  fontWeight: "600",
+                  fontSize: 16,
+                  color: "rgb(165, 166, 167)",
+                }}
+              >
+                {completePercentage}%
+              </Text>
+            </View>
+            <View style={styles.progressBar}>
+              <View
+                style={[
+                  styles.progressBarFiller,
+                  { width: `${completePercentage}%` },
+                ]}
+              />
+            </View>
+            <Text
+              style={{
+                fontWeight: "600",
+                fontSize: 12,
+                color: "rgb(165, 166, 167)",
+              }}
+            >
+              {getReadableDateDiff(
+                createdAt ?? new Date(),
+                triggerDate ?? new Date()
+              )}
+            </Text>
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -134,7 +222,8 @@ const styles = StyleSheet.create({
     flex: 1,
     width: 219,
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: "600",
+    color: "rgb(165, 166, 167)",
   },
   configureControls: {
     flex: 1,
@@ -142,24 +231,35 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   controlsContainer: {
-    display: "flex",
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
 
-  taskDescription: { fontSize: 16, fontWeight: "400", flex: 1, width: 219 },
+  taskDescription: {
+    fontSize: 16,
+    fontWeight: "400",
+    flex: 1,
+    width: 219,
+    color: "rgb(165, 166, 167)",
+  },
+  mark: {
+    fontSize: 16,
+    fontWeight: "400",
+    flex: 1,
+    flexGrow: 0,
+    color: "rgb(165, 166, 167)",
+  },
   item: {
     padding: 10,
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 20,
-    backgroundColor: "#fbeee0",
-    border: "2px solid #422800",
-    borderRadius: 30,
-    boxShadow: "#422800 4px 4px 0 0",
+
+    border: "2px solid #293238",
+    borderRadius: 9,
     color: "#422800",
   },
   itemLeft: {
