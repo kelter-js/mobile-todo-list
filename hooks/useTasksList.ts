@@ -156,6 +156,8 @@ const useTasksList = (
 
   const markTaskAsUndone = (openedTask: string) => {
     const taskToMoveBack = doneTasks.find((item) => item.id === openedTask);
+    console.log("doneTasks", doneTasks);
+    console.log("openedTask", openedTask);
 
     if (taskToMoveBack) {
       const { updatedDoneTasks, updatedTasksList } =
@@ -165,8 +167,8 @@ const useTasksList = (
           doneTasks
         );
 
-      setTasksList(updatedDoneTasks);
-      setDoneTasks(updatedTasksList);
+      setTasksList(updatedTasksList);
+      setDoneTasks(updatedDoneTasks);
 
       updateStorageTasks(
         tasksService.getMergedTasksList(updatedTasksList, updatedDoneTasks)
@@ -175,12 +177,17 @@ const useTasksList = (
   };
 
   const clearDoneTasks = () => {
-    setDoneTasks([]);
+    if (doneTasks.length !== 0) {
+      setDoneTasks([]);
 
-    updateStorageTasks([...tasksList]);
+      updateStorageTasks([...tasksList]);
+    }
   };
 
-  const [activeTaskData] = tasksList.filter((task) => task.id === activeTask);
+  const [activeTaskData] = (
+    isViewModeInProgress ? tasksList : doneTasks
+  ).filter((task) => task.id === activeTask);
+
   const [deleteTaskData] = [...tasksList, ...doneTasks].filter(
     (task) => task.id === taskToDelete
   );
@@ -199,6 +206,8 @@ const useTasksList = (
     clearDoneTasks,
     sortDirection,
     handleChangeSortDirection,
+    setDoneTasks,
+    setTasksList,
   };
 };
 
