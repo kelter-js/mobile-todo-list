@@ -5,8 +5,9 @@ import { registerForPushNotificationsAsync } from "../utils/notifications";
 
 const useNotificationRegister = () => {
   const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] =
-    useState<Notifications.Notification | null>(null);
+  const [notifications, setNotifications] = useState<
+    Notifications.Notification[]
+  >([]);
 
   const notificationListener = useRef<any>();
   const responseListener = useRef<any>();
@@ -18,7 +19,7 @@ const useNotificationRegister = () => {
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener(async (notification) => {
-        setNotification(notification);
+        setNotifications((state) => [...state, notification]);
       });
 
     responseListener.current =
@@ -34,7 +35,7 @@ const useNotificationRegister = () => {
     };
   }, []);
 
-  return { expoPushToken, notification };
+  return { expoPushToken, notifications, setNotifications };
 };
 
 export default useNotificationRegister;

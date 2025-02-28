@@ -71,7 +71,7 @@ const useInitiateTasks = () => {
     const { count, repeatableTasksList, parsedTasksList, replanableTasksList } =
       validateTasksList(tasks);
 
-    if (replanableTasksList) {
+    if (replanableTasksList.length) {
       //создаём новое напоминание, обновляем дату в таске и обновляем id напоминания в таске
       //после этого нужно засунуть эти таски в список repeatableTasksList
       const localTaskList = [...replanableTasksList];
@@ -83,6 +83,8 @@ const useInitiateTasks = () => {
           ...localTaskList,
         ]),
       ]);
+
+      return { repeatableTasksList, parsedTasksList };
     }
 
     if (count !== tasks.length) {
