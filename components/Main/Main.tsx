@@ -119,6 +119,7 @@ const Main = (): JSX.Element => {
       );
       const tasksToReplan = [...doneTasks, ...tasksList].filter(
         (task) =>
+          task.isAutoPlanning &&
           task.taskIdentificatorId &&
           notificationsIds.includes(task.taskIdentificatorId)
       );
