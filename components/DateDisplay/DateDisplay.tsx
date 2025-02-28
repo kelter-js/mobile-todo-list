@@ -28,6 +28,8 @@ const getSeasonImage = (season: keyof typeof YEAR_SEASONS) => {
   }
 };
 
+//в этом компоненте помимо стилизации даты нужно отобразить подробное описание таски и тайтл ее
+
 const DateDisplay: FC<DateDisplayProps> = ({ date }) => {
   const { year, month, monthDate, hour, minutes, season } =
     getFormattedDateObject(date);
@@ -67,7 +69,7 @@ const DateDisplay: FC<DateDisplayProps> = ({ date }) => {
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
+    flex: 1,
     justifyContent: "space-between",
     flexDirection: "row",
     flexWrap: "wrap",
@@ -75,7 +77,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   titleContainer: {
-    display: "flex",
+    flex: 1,
     justifyContent: "flex-start",
     flexDirection: "row",
     width: "100%",
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   itemContainer: {
-    display: "flex",
+    flex: 1,
     flexDirection: "column",
   },
   backgroundImage: {
