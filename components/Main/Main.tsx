@@ -35,7 +35,7 @@ const Main = (): JSX.Element => {
     handleCloseDeletionModal,
   } = useStateContext();
 
-  if (!isLoadingTasks) {
+  if (isLoadingTasks) {
     return <SplashScreen />;
   }
 
