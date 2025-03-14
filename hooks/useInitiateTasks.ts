@@ -3,16 +3,16 @@ import { useState } from "react";
 
 import { useLoadContext } from "../context/LoadContext";
 import { ACTIONS } from "../enums";
-import { ITask } from "../models";
+import { TaskData } from "../models";
 import validateTasksList from "../utils/validateTasksList";
 import storageManager from "../utils/storageManager";
 import { schedulePushNotification } from "../utils/notifications";
 import { generateNextTimer } from "../components/ScheduleSelection/constants";
 
 export const reScheduleTasks = async (
-  tasksList: ITask[],
-  setTasks?: (tasks: ITask[]) => void,
-  allTasks?: ITask[]
+  tasksList: TaskData[],
+  setTasks?: (tasks: TaskData[]) => void,
+  allTasks?: TaskData[]
 ) => {
   for (const task of tasksList) {
     const nextNotificationDate = generateNextTimer(
@@ -44,15 +44,13 @@ export const reScheduleTasks = async (
 
     setTasks(newTasksList);
   }
-
-  console.log("All items processed");
 };
 
 const useInitiateTasks = () => {
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
   const { setAction } = useLoadContext();
 
-  const updateTasks = async (updatedTasks: ITask[]) => {
+  const updateTasks = async (updatedTasks: TaskData[]) => {
     setIsLoadingTasks(true);
     setAction(ACTIONS.UPDATING);
 

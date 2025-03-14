@@ -3,7 +3,7 @@ import uuid from "react-native-uuid";
 
 import { tasksService } from "../utils/tasksService";
 import { ViewModes } from "../enums";
-import { ITask } from "../models";
+import { TaskData } from "../models";
 import useAppState from "./useAppState";
 import useInitiateTasks from "./useInitiateTasks";
 import { SORT_DIRECTIONS } from "../entities/SortDirections";
@@ -19,13 +19,13 @@ const useTasksList = (
   activeTask: string,
   taskToDelete: string
 ) => {
-  const [tasksList, setTasksList] = useState<ITask[]>([]);
-  const [doneTasks, setDoneTasks] = useState<ITask[]>([]);
+  const [tasksList, setTasksList] = useState<TaskData[]>([]);
+  const [doneTasks, setDoneTasks] = useState<TaskData[]>([]);
   const [sortDirection, setDirection] = useState<SORT_DIRECTIONS>(
     SORT_DIRECTIONS.DESC
   );
 
-  const createNewTask = async (newTaskData: Omit<ITask, "id">) => {
+  const createNewTask = async (newTaskData: Omit<TaskData, "id">) => {
     //creating notification
     const { notificationId } = await schedulePushNotification({
       title: newTaskData.title,
@@ -65,7 +65,7 @@ const useTasksList = (
     }
   }, [isAppVisible]);
 
-  const updateTask = (taskData: ITask) => {
+  const updateTask = (taskData: TaskData) => {
     const updatedList = tasksService.getUpdatedListByChangedTask(
       taskData,
       tasksList
@@ -156,8 +156,6 @@ const useTasksList = (
 
   const markTaskAsUndone = (openedTask: string) => {
     const taskToMoveBack = doneTasks.find((item) => item.id === openedTask);
-    console.log("doneTasks", doneTasks);
-    console.log("openedTask", openedTask);
 
     if (taskToMoveBack) {
       const { updatedDoneTasks, updatedTasksList } =
