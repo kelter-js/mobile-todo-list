@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import uuid from "react-native-uuid";
 
-import { ITask } from "../models";
+import { TaskData } from "../models";
 import dateReviver from "./dateReviver";
 
 const TASKS_LIST_KEY = "tasksList";
@@ -12,7 +12,7 @@ const INITIAL_TASKS = [
     description: "blah-blah",
     title: "first task",
     isRepeatable: false,
-    triggerDate: new Date("Sat Mar 13 2024 00:05:29 GMT+0500"),
+    triggerDate: new Date("Sat Mar Apr 2024 00:05:29 GMT+0500"),
     createdAt: new Date(),
   },
   {
@@ -28,7 +28,7 @@ const INITIAL_TASKS = [
     description: "bleh-bleh",
     title: "second task",
     isRepeatable: false,
-    triggerDate: new Date("Sat Mar 13 2024 00:05:29 GMT+0500"),
+    triggerDate: new Date("Sat Apr 13 2024 00:05:29 GMT+0500"),
     createdAt: new Date(),
   },
   {
@@ -36,7 +36,7 @@ const INITIAL_TASKS = [
     description: "bluh-bluh",
     title: "third task",
     isRepeatable: false,
-    triggerDate: new Date("Sat Mar 13 2025 00:05:29 GMT+0500"),
+    triggerDate: new Date("Sat Apr 13 2025 00:05:29 GMT+0500"),
     createdAt: new Date(),
   },
   {
@@ -44,7 +44,7 @@ const INITIAL_TASKS = [
     description: "bluh-bluh",
     title: "third task",
     isRepeatable: false,
-    triggerDate: new Date("Sat Mar 13 2025 00:05:29 GMT+0500"),
+    triggerDate: new Date("Sat Apr 13 2025 00:05:29 GMT+0500"),
     createdAt: new Date(),
   },
   {
@@ -52,7 +52,7 @@ const INITIAL_TASKS = [
     description: "bluh-bluh",
     title: "third task",
     isRepeatable: false,
-    triggerDate: new Date("Sat Mar 13 2025 00:05:29 GMT+0500"),
+    triggerDate: new Date("Sat Apr 13 2025 00:05:29 GMT+0500"),
     createdAt: new Date(),
   },
   {
@@ -60,7 +60,7 @@ const INITIAL_TASKS = [
     description: "bluh-bluh",
     title: "third task",
     isRepeatable: false,
-    triggerDate: new Date("Sat Mar 13 2025 00:05:29 GMT+0500"),
+    triggerDate: new Date("Sat Apr 13 2025 00:05:29 GMT+0500"),
     createdAt: new Date(),
   },
   {
@@ -69,7 +69,7 @@ const INITIAL_TASKS = [
       "bluh-bluh bluh-bluhbluh-bluhbluh-bluhbluh-bluhbluh-bluhbluh-bluh",
     title: "third task third task third task third task",
     isRepeatable: false,
-    triggerDate: new Date("Sat Mar 13 2025 00:05:29 GMT+0500"),
+    triggerDate: new Date("Sat Apr 13 2025 00:05:29 GMT+0500"),
     createdAt: new Date(),
   },
   {
@@ -96,7 +96,7 @@ const storageManager = {
       return INITIAL_TASKS;
     }
   },
-  async updateTasksList(newList: ITask[]) {
+  async updateTasksList(newList: TaskData[]) {
     try {
       const jsonValue = JSON.stringify(newList);
       await AsyncStorage.setItem(TASKS_LIST_KEY, jsonValue);

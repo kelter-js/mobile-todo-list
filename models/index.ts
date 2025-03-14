@@ -8,37 +8,7 @@ export interface IModalWindowProps {
   height?: number;
 }
 
-export interface TaskFormProps {
-  isViewModeInProgress: boolean;
-  onRemoveTask: (id: string, isPermanentDeletion?: boolean) => void;
-  onMoveTaskBack: VoidFunction;
-  taskId: string;
-  taskText?: string;
-  onCreateReminder: (date: Date, task: ITask) => void;
-  task: ITask;
-}
-
-export interface ConfirmDeletionProps {
-  taskId: string;
-  onRemoveTask: (id: string, isPermanentDeletion?: boolean) => void;
-  task: ITask;
-  onClose: VoidFunction;
-}
-
-export interface INewTaskFormProps {
-  onClear: VoidFunction;
-  isViewModeInProgress?: boolean;
-  disabled: boolean;
-  toggleTaskForm: VoidFunction;
-}
-
-export interface INewTaskModalFormProps {
-  onAdd: (taskData: ITask) => void;
-  task?: ITask;
-  onClose: VoidFunction;
-}
-
-export interface ITask {
+export interface TaskData {
   description: string;
   title: string;
   isRepeatable: boolean;
@@ -57,21 +27,9 @@ export interface CustomCheckboxProps {
   toggleCheckbox: (event: GestureResponderEvent) => void;
 }
 
-export interface ITaskProps extends ITask {
-  onOpen: (id: string) => void;
-  onConfigure: (id: string) => void;
-  onDelete: (id: string) => void;
+export interface TaskDataProps extends TaskData {
   id: string | Uint8Array;
-  isNotConfigurable: boolean;
   isLastTask: boolean;
-}
-
-export interface ITaskListProps {
-  tasks: Array<ITask>;
-  onTaskOpen: (id: string) => void;
-  onTaskConfigure: (id: string) => void;
-  onTaskDelete: (id: string) => void;
-  isViewModeInProgress: boolean;
 }
 
 export interface ColorItem {

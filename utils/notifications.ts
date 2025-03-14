@@ -1,6 +1,7 @@
 import { Alert, Platform } from "react-native";
-import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
+
 import { NewTaskNotification } from "../models";
 
 Notifications.setNotificationHandler({
@@ -16,7 +17,6 @@ export async function schedulePushNotification({
   title,
   date,
 }: NewTaskNotification) {
-  Alert.alert(`reminder will fire at: ${date.toLocaleString()}`);
   const notificationId = await Notifications.scheduleNotificationAsync({
     content: {
       title: `${title}`,
@@ -30,9 +30,7 @@ export async function schedulePushNotification({
       Alert.alert("registered successfully!");
       return res;
     })
-    .catch((err) => {
-      Alert.alert("failed to create notification!", err);
-    });
+    .catch((err) => Alert.alert("failed to create notification!", err));
 
   return { notificationId, date };
 }
@@ -41,9 +39,7 @@ export async function cancelScheduledNotification(notificationId: string) {
   Alert.alert(`task id, which need to be cancelled: ${notificationId}`);
 
   await Notifications.cancelScheduledNotificationAsync(notificationId)
-    .then(() => {
-      Alert.alert("task notification successfully cancelled!");
-    })
+    .then(() => Alert.alert("task notification successfully cancelled!"))
     .catch(() => Alert.alert("Failed to cancel task notification!"));
 }
 
@@ -56,9 +52,7 @@ export const registerForPushNotificationsAsync = async () => {
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: "#FF231F7C",
-    }).then(() => {
-      Alert.alert("registered successfully!");
-    });
+    }).then(() => Alert.alert("registered successfully!"));
   }
 
   if (Device.isDevice) {
@@ -81,6 +75,7 @@ export const registerForPushNotificationsAsync = async () => {
   } else {
     Alert.alert("Must use physical device for Push Notifications");
   }
+
   Alert.alert("registered token:", token);
 
   return token;
