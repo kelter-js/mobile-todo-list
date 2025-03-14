@@ -1,4 +1,4 @@
 export interface ColorPickerProps {
-  selectedColor: string | undefined;
+  selectedColor?: string;
   onSelectColor: (color: string) => void;
 }
