@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 import {
   ImageBackground,
   Pressable,
@@ -7,11 +7,14 @@ import {
   StyleSheet,
 } from "react-native";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
-import { EditViewProps } from "./types";
+
+import { useStateContext } from "../../context/StateContext";
 
 const prefabImage = require("../../assets/background/static-bg.jpg");
 
-export const EditView: FC<EditViewProps> = ({ children, onClose }) => {
+export const EditView: FC<PropsWithChildren> = ({ children }) => {
+  const { handleCloseTaskModal } = useStateContext();
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
@@ -23,7 +26,7 @@ export const EditView: FC<EditViewProps> = ({ children, onClose }) => {
         source={prefabImage}
       />
 
-      <Pressable style={styles.closeButton} onPress={onClose}>
+      <Pressable style={styles.closeButton} onPress={handleCloseTaskModal}>
         <EvilIcons name="close" size={24} color="white" />
       </Pressable>
 
