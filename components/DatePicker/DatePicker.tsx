@@ -11,19 +11,13 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
+import { DatePickerProps, AndroidMode } from "./types";
 
-type AndroidMode = "date" | "time";
-
-interface IDatePickerProps {
-  date: Date;
-  setSelectedDate: (date: Date) => void;
-}
-
-export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
+export const DatePicker: FC<DatePickerProps> = ({ setSelectedDate, date }) => {
   const [mode, setMode] = useState<AndroidMode>("date");
   const [show, setShow] = useState(false);
 
-  const onChange = (e: DateTimePickerEvent, selectedDate: Date | undefined) => {
+  const onChange = (_: DateTimePickerEvent, selectedDate: Date | undefined) => {
     const currentDate = selectedDate ?? new Date();
     setShow(false);
     Alert.alert("selected date:", currentDate.toString());
@@ -35,13 +29,9 @@ export const DatePicker: FC<IDatePickerProps> = ({ setSelectedDate, date }) => {
     setMode(currentMode);
   };
 
-  const showDatepicker = () => {
-    showMode("date");
-  };
+  const showDatepicker = () => showMode("date");
 
-  const showTimepicker = () => {
-    showMode("time");
-  };
+  const showTimepicker = () => showMode("time");
 
   return (
     <SafeAreaView>
@@ -84,6 +74,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
+    paddingHorizontal: 10,
+    paddingVertical: 8,
   },
   buttonsMainContainer: {
     flex: 1,
@@ -102,12 +94,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "50%",
     borderRadius: 12,
-    borderColor: "#293238",
-    borderWidth: 1,
-  },
-  currentlySelectedDate: {
-    position: "absolute",
-    top: 75,
-    textAlign: "center",
+    border: "1px solid rgb(165, 166, 167)",
   },
 });

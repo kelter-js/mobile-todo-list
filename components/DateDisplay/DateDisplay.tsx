@@ -1,42 +1,17 @@
 import { FC } from "react";
-import { StyleSheet, ImageBackground } from "react-native";
+import { StyleSheet, ImageBackground, View, Text } from "react-native";
 
 import getFormattedDateObject from "../../utils/getFormattedDateObject";
-import { YEAR_SEASONS } from "../../enums";
-
-interface DateDisplayProps {
-  date: Date;
-}
-
-const backgroundPaths = [
-  require("../../assets/icons/autumn.png"),
-  require("../../assets/icons/spring.png"),
-  require("../../assets/icons/summer.png"),
-  require("../../assets/icons/winter.png"),
-];
-
-const getSeasonImage = (season: keyof typeof YEAR_SEASONS) => {
-  switch (season) {
-    case YEAR_SEASONS.AUTUMN:
-      return backgroundPaths[0];
-    case YEAR_SEASONS.SPRING:
-      return backgroundPaths[1];
-    case YEAR_SEASONS.SUMMER:
-      return backgroundPaths[2];
-    case YEAR_SEASONS.WINTER:
-      return backgroundPaths[3];
-  }
-};
-
-//в этом компоненте помимо стилизации даты нужно отобразить подробное описание таски и тайтл ее
+import { DateDisplayProps } from "./types";
+import { getSeasonImage } from "./utils";
 
 const DateDisplay: FC<DateDisplayProps> = ({ date }) => {
   const { year, month, monthDate, hour, minutes, season } =
     getFormattedDateObject(date);
 
   return (
-    <div style={styles.container}>
-      <div style={styles.titleContainer}>Selected date is:</div>
+    <View style={styles.mainContainer}>
+      <View style={styles.titleContainer}>Дата напоминания:</View>
 
       <ImageBackground
         resizeMode="stretch"
@@ -44,49 +19,73 @@ const DateDisplay: FC<DateDisplayProps> = ({ date }) => {
         source={getSeasonImage(season)}
       />
 
-      <div>
-        <div>Год</div>
-        <div>{year}</div>
-      </div>
+      <View style={styles.container}>
+        <View style={styles.dateItem}>
+          <Text style={styles.dateTitle}>Год</Text>
+          <Text style={styles.dateValue}>{year}</Text>
+        </View>
 
-      <div>
-        <div>Месяц</div>
-        <div>{month}</div>
-      </div>
+        <View style={styles.dateItem}>
+          <Text style={styles.dateTitle}>Месяц</Text>
+          <Text style={styles.dateValue}>{month}</Text>
+        </View>
 
-      <div>
-        <div>Дата</div>
-        <div>{monthDate}</div>
-      </div>
+        <View style={styles.dateItem}>
+          <Text style={styles.dateTitle}>Дата</Text>
+          <Text style={styles.dateValue}>{monthDate}</Text>
+        </View>
 
-      <div>
-        <div>Время</div>
-        <div>{`${hour} : ${minutes}`}</div>
-      </div>
-    </div>
+        <View>
+          <Text style={styles.dateTitle}>Время</Text>
+          <Text style={styles.dateValue}>{`${hour} : ${minutes}`}</Text>
+        </View>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    flexDirection: "column",
+    height: 40,
+    paddingTop: 20,
+    width: "100%",
+    justifyContent: "space-between",
+  },
+  dateItem: {
+    height: 47,
+    borderRightColor: "rgb(165, 166, 167)",
+    borderRightWidth: 3,
+    paddingBottom: 10,
+    paddingRight: 10,
+  },
+  dateTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "rgb(165, 166, 167)",
+  },
+  dateValue: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: "rgb(165, 166, 167)",
+  },
   container: {
     flex: 1,
     justifyContent: "space-between",
     flexDirection: "row",
-    flexWrap: "wrap",
     width: "100%",
     marginBottom: 15,
+    marginTop: 15,
   },
   titleContainer: {
     flex: 1,
     justifyContent: "flex-start",
     flexDirection: "row",
     width: "100%",
-    fontSize: 22,
     fontWeight: "bold",
-  },
-  itemContainer: {
-    flex: 1,
-    flexDirection: "column",
+    fontSize: 24,
+    color: "#aeb0b0",
   },
   backgroundImage: {
     width: "100%",

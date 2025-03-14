@@ -4,35 +4,33 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { getShortReviewDate } from "../../utils/getShortReviewDate";
 import { DEFAULT_COLOR } from "../../utils/getColorItem";
-import { ITaskProps } from "../../models";
+import { TaskDataProps } from "../../models";
 import { getPercentageDiffBetweenDates } from "../../utils/getPercentageDiffBetweenDates";
 import { getReadableDateDiff } from "../../utils/getReadableDateDiff";
+import { useStateContext } from "../../context/StateContext";
 
-const Task: FC<ITaskProps> = ({
+const Task: FC<TaskDataProps> = ({
   description,
   title,
   isRepeatable,
   id,
   taskColor,
-  onOpen,
-  onConfigure,
-  isNotConfigurable,
   triggerDate,
-  onDelete,
   createdAt,
   isLastTask,
 }) => {
-  const handleOpening = () => {
-    onOpen(String(id));
-  };
+  const {
+    handleTaskOpen,
+    handleTaskConfigure,
+    handleDeleteTask,
+    isViewModeInProgress,
+  } = useStateContext();
 
-  const handleConfigure = () => {
-    onConfigure(String(id));
-  };
+  const handleOpening = () => handleTaskOpen(String(id));
 
-  const handleDeletion = () => {
-    onDelete(String(id));
-  };
+  const handleConfigure = () => handleTaskConfigure(String(id));
+
+  const handleDeletion = () => handleDeleteTask(String(id));
 
   const completePercentage = getPercentageDiffBetweenDates(
     createdAt ?? new Date(),
@@ -86,7 +84,7 @@ const Task: FC<ITaskProps> = ({
             />
           </TouchableOpacity>
 
-          {isNotConfigurable && (
+          {isViewModeInProgress && (
             <View
               style={styles.configureControls}
               onStartShouldSetResponder={() => true}
@@ -119,60 +117,28 @@ const Task: FC<ITaskProps> = ({
           )}
         </View>
 
-        <View
-          style={{
-            minWidth: "100%",
-            flex: 1,
-            flexDirection: "row",
-            justifyContent: "flex-start",
-          }}
-        >
+        <View style={styles.labelContainer}>
           <Text style={styles.mark}>Метка: </Text>
           <View
-            style={{
-              //определяем выбранный прежде цвет, переделать на label: и элемент с бэкграундом цвета, 20 на 20 px
-              backgroundColor: taskColor ?? DEFAULT_COLOR,
-              height: 20,
-              width: 40,
-              marginLeft: 8,
-              marginTop: 2,
-            }}
+            style={[
+              styles.label,
+              {
+                //определяем выбранный прежде цвет, переделать на label: и элемент с бэкграундом цвета, 20 на 20 px
+                backgroundColor: taskColor ?? DEFAULT_COLOR,
+              },
+            ]}
           />
         </View>
 
-        {isNotConfigurable && (
-          <View
-            style={{
-              width: "100%",
-              marginTop: 8,
-            }}
-          >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "space-between",
-                flexDirection: "row",
-              }}
-            >
-              <Text
-                style={{
-                  fontWeight: "600",
-                  fontSize: 16,
-                  color: "#949697",
-                }}
-              >
-                Прогресс:
-              </Text>
-              <Text
-                style={{
-                  fontWeight: "600",
-                  fontSize: 16,
-                  color: "rgb(165, 166, 167)",
-                }}
-              >
+        {isViewModeInProgress && (
+          <View style={styles.progressBarContainer}>
+            <View style={styles.progressBarTitleContainer}>
+              <Text style={styles.progressBarTitle}>Прогресс:</Text>
+              <Text style={styles.progressBarPercentage}>
                 {completePercentage}%
               </Text>
             </View>
+
             <View style={styles.progressBar}>
               <View
                 style={[
@@ -181,13 +147,7 @@ const Task: FC<ITaskProps> = ({
                 ]}
               />
             </View>
-            <Text
-              style={{
-                fontWeight: "600",
-                fontSize: 12,
-                color: "rgb(165, 166, 167)",
-              }}
-            >
+            <Text style={styles.daysLeftDescription}>
               {getReadableDateDiff(
                 createdAt ?? new Date(),
                 triggerDate ?? new Date()
@@ -201,6 +161,30 @@ const Task: FC<ITaskProps> = ({
 };
 
 const styles = StyleSheet.create({
+  daysLeftDescription: {
+    fontWeight: "600",
+    fontSize: 12,
+    color: "rgb(165, 166, 167)",
+  },
+  progressBarPercentage: {
+    fontWeight: "600",
+    fontSize: 16,
+    color: "rgb(165, 166, 167)",
+  },
+  progressBarTitle: { fontWeight: "600", fontSize: 16, color: "#949697" },
+  progressBarTitleContainer: {
+    flex: 1,
+    justifyContent: "space-between",
+    flexDirection: "row",
+  },
+  progressBarContainer: { width: "100%", marginTop: 8 },
+  label: { height: 20, width: 40, marginLeft: 8, marginTop: 2 },
+  labelContainer: {
+    minWidth: "100%",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
   progressBar: {
     width: "100%",
     height: 8,
@@ -236,7 +220,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
   },
-
   taskDescription: {
     fontSize: 16,
     fontWeight: "400",
@@ -257,7 +240,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "space-between",
-
     border: "2px solid #293238",
     borderRadius: 9,
     color: "#422800",
@@ -266,14 +248,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
-  },
-
-  circular: {
-    height: 24,
-    width: 24,
-    borderColor: "#55BCF6",
-    borderWidth: 2,
-    borderRadius: 5,
   },
 });
 

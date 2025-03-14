@@ -1,31 +1,26 @@
-import { FC } from "react";
 import {
   KeyboardAvoidingView,
-  Platform,
   Text,
   StyleSheet,
   Pressable,
 } from "react-native";
+import { useStateContext } from "../../context/StateContext";
+import { isPlatformIOS } from "./constants";
 
-import { INewTaskFormProps } from "../../models";
+const NewTaskForm = () => {
+  const { isViewModeInProgress, clearDoneTasks, toggleTaskForm, tasksToView } =
+    useStateContext();
 
-const IOS_TYPE = "ios";
-const isPlatformIOS = Platform.OS === IOS_TYPE;
+  const isDisabled = !isViewModeInProgress && tasksToView?.length === 0;
 
-const NewTaskForm: FC<INewTaskFormProps> = ({
-  onClear,
-  isViewModeInProgress,
-  toggleTaskForm,
-  disabled,
-}) => {
   return (
     <KeyboardAvoidingView
       behavior={isPlatformIOS ? "padding" : "height"}
       style={styles.writeTaskWrapper}
     >
       <Pressable
-        onPress={isViewModeInProgress ? toggleTaskForm : onClear}
-        style={[styles.addWrapper, disabled && styles.diabled]}
+        onPress={isViewModeInProgress ? toggleTaskForm : clearDoneTasks}
+        style={[styles.addWrapper, isDisabled && styles.diabled]}
       >
         <Text
           style={[isViewModeInProgress ? styles.addText : styles.removeText]}
@@ -60,7 +55,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   diabled: {
     opacity: 0.3,
   },

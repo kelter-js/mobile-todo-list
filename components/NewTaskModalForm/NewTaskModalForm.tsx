@@ -7,12 +7,10 @@ import {
   Pressable,
   Text,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import { CheckBox } from "@rneui/base";
 import { Feather } from "@expo/vector-icons";
 
-import { INewTaskModalFormProps } from "../../models";
-import { DEFAULT_COLORS, getColorItem } from "../../utils/getColorItem";
+import { getColorItem } from "../../utils/getColorItem";
 import DatePicker from "../DatePicker";
 import {
   cancelScheduledNotification,
@@ -22,17 +20,16 @@ import { ColorPicker } from "../ColorPicker";
 import { ScheduleSelection } from "../ScheduleSelection";
 
 import {
-  generateNextTimer,
   MIN_SCHEDULE_INTERVAL,
   SCHEDULE_TYPES,
 } from "../ScheduleSelection/constants";
+import { useStateContext } from "../../context/StateContext";
+import { NewTaskModalFormProps } from "./types";
 
 //we need to extract all useState into one hook - like useForm
-const NewTaskModalForm: FC<INewTaskModalFormProps> = ({
-  onAdd,
-  task,
-  onClose,
-}) => {
+const NewTaskModalForm: FC<NewTaskModalFormProps> = ({ task }) => {
+  const { handleCloseTaskModal, handleTaskCreation } = useStateContext();
+
   const [newTaskText, setNewTaskText] = useState(task?.description ?? "");
   const [newTaskTitle, setNewTaskTitle] = useState(task?.title ?? "");
   const [isRepeatableTask, setRepeatableTask] = useState(
@@ -92,7 +89,6 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({
         repeatFrequency: scheduleFrequency,
       };
 
-      //if we edit task, and income task date diff with state trigger date, which means user change it - we need to delete notification subscription
       if (
         task &&
         isTaskEditMode &&
@@ -121,7 +117,7 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({
         changedTaskData.triggerDate = task?.triggerDate;
       }
 
-      onAdd(changedTaskData);
+      handleTaskCreation(changedTaskData);
 
       setNewTaskText("");
       setNewTaskTitle("");
@@ -223,7 +219,7 @@ const NewTaskModalForm: FC<INewTaskModalFormProps> = ({
 
       <View style={styles.controlsContainer}>
         <Pressable
-          onPress={onClose}
+          onPress={handleCloseTaskModal}
           style={[styles.button, styles.cancelButton]}
         >
           <Text style={styles.newTaskText}>Отмена</Text>
@@ -266,11 +262,6 @@ const styles = StyleSheet.create({
     color: "#ACAEAE",
     textAlign: "center",
   },
-  checkboxContainer: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-  },
   datePickerContainer: {
     flex: 1,
     flexDirection: "row",
@@ -279,10 +270,14 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
+    flexGrow: 0,
+    height: 46,
+    minHeight: 46,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
     paddingRight: 8,
+    marginBottom: 12,
   },
   checkbox: {
     backgroundColor: "transparent",
@@ -293,9 +288,6 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.3,
-  },
-  paragraph: {
-    fontSize: 15,
   },
   taskContainer: {
     flex: 1,

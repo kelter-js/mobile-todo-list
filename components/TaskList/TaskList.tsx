@@ -1,37 +1,33 @@
-import { FC, useMemo } from "react";
-import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
+import { useMemo } from "react";
+import { View, StyleSheet, ScrollView } from "react-native";
 
-import { getPercentage } from "../../utils/getPercentage";
-import { ITaskListProps } from "../../models";
 import Task from "../Task/Task";
+import { useStateContext } from "../../context/StateContext";
 
-const windowHeight = Dimensions.get("window").height;
+const TaskList = () => {
+  const {
+    isViewModeInProgress,
+    handleTaskOpen,
+    tasksToView,
+    handleTaskConfigure,
+  } = useStateContext();
 
-const TaskList: FC<ITaskListProps> = ({
-  tasks,
-  onTaskOpen,
-  onTaskConfigure,
-  isViewModeInProgress,
-  onTaskDelete,
-}) => {
-  const renderList = useMemo(() => {
-    return tasks.map((task, index, self) => {
-      const taskId = task.id ? task.id.toString() : "";
+  const renderList = useMemo(
+    () =>
+      tasksToView?.map((task, index, self) => {
+        const taskId = task.id ? task.id.toString() : "";
 
-      return (
-        <Task
-          id={taskId}
-          key={taskId}
-          onOpen={onTaskOpen}
-          onConfigure={onTaskConfigure}
-          isNotConfigurable={isViewModeInProgress}
-          onDelete={onTaskDelete}
-          isLastTask={index === self.length - 1}
-          {...task}
-        />
-      );
-    });
-  }, [tasks, onTaskOpen, onTaskConfigure, isViewModeInProgress]);
+        return (
+          <Task
+            id={taskId}
+            key={taskId}
+            isLastTask={index === self.length - 1}
+            {...task}
+          />
+        );
+      }),
+    [tasksToView, handleTaskOpen, handleTaskConfigure, isViewModeInProgress]
+  );
 
   return (
     <View style={styles.listContainer}>

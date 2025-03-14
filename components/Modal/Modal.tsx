@@ -8,12 +8,10 @@ import {
 import { FC } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
-import { IModalWindowProps } from "../../models";
 import { getPercentage } from "../../utils/getPercentage";
+import { IModalWindowProps } from "../../models";
 
 const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
-const DEFAULT_HEIGHT = 330;
 
 const ModalWindow: FC<IModalWindowProps> = ({
   onCloseModal,
@@ -39,7 +37,7 @@ const ModalWindow: FC<IModalWindowProps> = ({
                   <Ionicons
                     name="ios-close-circle-outline"
                     size={28}
-                    color="#333"
+                    color="#aeb0b0"
                   />
                 </TouchableOpacity>
 
@@ -79,8 +77,10 @@ const styles = StyleSheet.create({
   modalView: {
     flexDirection: "column",
     justifyContent: "space-between",
-    backgroundColor: "white",
-    borderRadius: 20,
+    backgroundColor: "rgba(61, 74, 82, 0.9)",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgb(165, 166, 167)",
     padding: 15,
     paddingTop: 25,
     alignItems: "center",
@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-
     width: getPercentage(90, windowWidth),
   },
   closeModalButton: {

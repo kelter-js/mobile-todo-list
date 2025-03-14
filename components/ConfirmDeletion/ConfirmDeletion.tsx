@@ -1,17 +1,17 @@
-import React, { FC } from "react";
-import { MaterialIcons } from "@expo/vector-icons";
 import { Pressable, Text, StyleSheet, View } from "react-native";
-import { ConfirmDeletionProps } from "../../models";
+import { MaterialIcons } from "@expo/vector-icons";
 
-export const ConfirmDeletion: FC<ConfirmDeletionProps> = ({
-  task,
-  taskId,
-  onRemoveTask,
-  onClose,
-}) => {
-  const handleRemove = () => {
-    onRemoveTask(taskId, true);
-  };
+import { useStateContext } from "../../context/StateContext";
+
+export const ConfirmDeletion = () => {
+  const {
+    handleRemoveTask,
+    deleteTask,
+    deleteTaskData,
+    handleCloseDeletionModal,
+  } = useStateContext();
+
+  const handleRemove = () => handleRemoveTask(String(deleteTask), true);
 
   return (
     <View style={styles.container}>
@@ -19,12 +19,12 @@ export const ConfirmDeletion: FC<ConfirmDeletionProps> = ({
 
       <View style={styles.metaContainer}>
         <Text>Вы точно хотите удалить задачу:</Text>
-        <Text>{`${task?.title}`}</Text>
-        <Text>{`${task?.description}`}</Text>
+        <Text>{`${deleteTaskData?.title}`}</Text>
+        <Text>{`${deleteTaskData?.description}`}</Text>
       </View>
 
       <View style={styles.controls}>
-        <Pressable style={styles.control} onPress={onClose}>
+        <Pressable style={styles.control} onPress={handleCloseDeletionModal}>
           <Text style={[styles.controlText, styles.controlTextWrapper]}>
             <MaterialIcons name="cancel" size={24} color="black" />
             Отмена

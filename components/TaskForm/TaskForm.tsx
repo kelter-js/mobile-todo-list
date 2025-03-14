@@ -5,15 +5,15 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { FC, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 
-import { TaskFormProps } from "../../models";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import DatePicker from "../DatePicker";
 import DateDisplay from "../DateDisplay";
+import { useStateContext } from "../../context/StateContext";
 
 const removeButtonDescription = (isViewModeInProgress: boolean) =>
   isViewModeInProgress ? (
@@ -28,15 +28,19 @@ const removeButtonDescription = (isViewModeInProgress: boolean) =>
     </>
   );
 
-const TaskForm: FC<TaskFormProps> = ({
-  onRemoveTask,
-  onMoveTaskBack,
-  onCreateReminder,
-  taskId,
-  isViewModeInProgress,
-  task,
-}) => {
-  const [selectedDate, setSelectedDate] = useState<Date>(task?.triggerDate!);
+const TaskForm = () => {
+  const {
+    isViewModeInProgress,
+    activeTaskData,
+    activeTask,
+    handleRemoveTask: onRemoveTask,
+    createNewNotification,
+    handleMoveTaskBack,
+  } = useStateContext();
+
+  const [selectedDate, setSelectedDate] = useState<Date>(
+    activeTaskData?.triggerDate!
+  );
   const [isDateSelected, setDateSelected] = useState(false);
 
   const handleDateSelection = useCallback((date: Date) => {
@@ -44,13 +48,13 @@ const TaskForm: FC<TaskFormProps> = ({
     setSelectedDate(date);
   }, []);
 
-  const handleRemoveTask = () => {
-    onRemoveTask(taskId);
-  };
+  const handleRemoveTask = () => onRemoveTask(String(activeTask));
+  const handleCreateNewNotification = () =>
+    createNewNotification(selectedDate, activeTaskData);
 
   return (
     <>
-      <DateDisplay date={task?.triggerDate!} />
+      <DateDisplay date={activeTaskData?.triggerDate!} />
 
       <View style={styles.controlsContainer}>
         <Pressable
@@ -74,12 +78,18 @@ const TaskForm: FC<TaskFormProps> = ({
                 styles.actionButton,
                 !isDateSelected && styles.buttonDisabled,
               ]}
-              disabled={!isDateSelected || selectedDate === task?.triggerDate}
-              onPress={() => onCreateReminder(selectedDate, task)}
+              disabled={
+                !isDateSelected || selectedDate === activeTaskData?.triggerDate
+              }
+              onPress={handleCreateNewNotification}
             >
               <Text style={styles.actionText}>
                 Set new date
-                <Entypo name="back-in-time" size={24} color="black" />
+                <Entypo
+                  name="back-in-time"
+                  size={24}
+                  color="rgb(165, 166, 167)"
+                />
               </Text>
             </Pressable>
           </TouchableOpacity>
@@ -93,14 +103,14 @@ const TaskForm: FC<TaskFormProps> = ({
               !isDateSelected && styles.buttonDisabled,
             ]}
             disabled={!isDateSelected}
-            onPress={onMoveTaskBack}
+            onPress={handleMoveTaskBack}
           >
             <Text style={styles.actionText}>
               Unfinished task
               <MaterialCommunityIcons
                 name="progress-check"
                 size={24}
-                color="black"
+                color="rgb(165, 166, 167)"
               />
             </Text>
           </Pressable>
@@ -124,21 +134,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    flexGrow: 0.2,
+    marginTop: 10,
   },
   buttonDisabled: {
     opacity: 0.3,
   },
   button: {
-    borderRadius: 20,
-    padding: 4,
-    elevation: 2,
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
   },
   actionButton: {
     borderWidth: 1,
-    borderRadius: 10,
   },
   doneButton: {
     borderColor: "green",
@@ -146,16 +154,11 @@ const styles = StyleSheet.create({
   deleteButton: {
     borderColor: "red",
   },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
   actionText: {
     flex: 1,
     alignItems: "center",
     gap: 4,
-    color: "black",
+    color: "rgb(165, 166, 167)",
     fontWeight: "bold",
     textAlign: "center",
   },

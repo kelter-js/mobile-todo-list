@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { Pressable, View, Text, StyleSheet } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -6,15 +5,22 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { ViewModes } from "../../enums";
 import { SORT_DIRECTIONS } from "../../entities/SortDirections";
-import { TaskFilterButtonsProps } from "./types";
 
-const TaskFilterButtons: FC<TaskFilterButtonsProps> = ({
-  isViewModeInProgress,
-  setViewMode,
-  sortDirection,
-  handleChangeSortDirection,
-  hasSortButton,
-}) => {
+import { useStateContext } from "../../context/StateContext";
+
+const MIN_AMOUNT_OF_TASKS_TO_SORT = 1;
+
+const TaskFilterButtons = () => {
+  const {
+    setViewMode,
+    isViewModeInProgress,
+    sortDirection,
+    tasksToView,
+    handleChangeSortDirection,
+  } = useStateContext();
+
+  const hasSortButton = tasksToView?.length > MIN_AMOUNT_OF_TASKS_TO_SORT;
+
   const handleChangeViewMode = () => {
     setViewMode(
       isViewModeInProgress ? ViewModes.FINISHED : ViewModes.IN_PROGRESS
@@ -32,6 +38,7 @@ const TaskFilterButtons: FC<TaskFilterButtonsProps> = ({
               <AntDesign name="close" size={16} color="white" />
             )}
           </Pressable>
+
           <Text style={styles.title}>
             {isViewModeInProgress ? "Текущие задачи" : "Завершенные задачи"}
           </Text>
@@ -82,7 +89,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   container: {
     flex: 1,
     flexDirection: "column",
